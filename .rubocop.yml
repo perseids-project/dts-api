@@ -1,0 +1,12 @@
+require: rubocop-rails
+
+inherit_gem:
+  gnar-style:
+    - "rubocop/rubocop_rails.yml"
+
+Metrics/LineLength:
+  Max: 120
+  Severity: refactor
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes

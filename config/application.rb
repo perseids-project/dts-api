@@ -33,5 +33,17 @@ module Dts
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    config.dts_repositories = {
+      'canonical-latinLit' => 'https://github.com/PerseusDL/canonical-latinLit',
+      'canonical-greekLit' => 'https://github.com/PerseusDL/canonical-greekLit',
+      'canonical-farsiLit' => 'https://github.com/PerseusDL/canonical-farsiLit',
+      'canonical-pdlpsci' => 'https://github.com/PerseusDL/canonical-pdlpsci',
+      'csel-dev' => 'https://github.com/OpenGreekAndLatin/csel-dev',
+      'canonical-pdlrefwk' => 'https://github.com/PerseusDL/canonical-pdlrefwk',
+      'First1KGreek' => 'https://github.com/OpenGreekAndLatin/First1KGreek',
+      'priapeia' => 'https://github.com/lascivaroma/priapeia',
+      'ancJewLitCTS' => 'https://github.com/hlapin/ancJewLitCTS',
+    }
   end
 end

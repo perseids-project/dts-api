@@ -1,10 +1,8 @@
 class Git
-  def self.clone_or_update!(name, url)
-    if File.exist?(path(name))
-      update!(name)
-    else
-      clone!(name, url)
-    end
+  def self.clone_or_update!(name, url, commit)
+    clone!(name, url) unless File.exist?(path(name))
+
+    update!(name, commit)
   end
 
   def self.path(*dirs)
@@ -15,8 +13,8 @@ class Git
     system('git', 'clone', '--branch', 'master', '--single-branch', '--depth', '1', url, path(name))
   end
 
-  def self.update!(name)
-    system('git', '-C', path(name), 'fetch', '--depth', '1', 'origin', 'master')
-    system('git', '-C', path(name), 'reset', '--hard', 'origin/master')
+  def self.update!(name, commit)
+    system('git', '-C', path(name), 'fetch', '--depth', '1')
+    system('git', '-C', path(name), 'reset', '--hard', commit)
   end
 end

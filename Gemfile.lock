@@ -74,8 +74,10 @@ GEM
     ffi (1.11.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    gnar-style (0.7.0)
-      rubocop (~> 0.68)
+    gnar-style (0.8.0)
+      rubocop (~> 0.72)
+      rubocop-performance
+      rubocop-rails (~> 2.2.0)
       thor
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
@@ -173,6 +175,8 @@ GEM
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 1.7)
+    rubocop-performance (1.4.1)
+      rubocop (>= 0.71.0)
     rubocop-rails (2.2.1)
       rack (>= 1.1)
       rubocop (>= 0.72.0)
@@ -207,7 +211,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap (>= 1.4.2)
   factory_bot_rails
-  gnar-style
+  gnar-style (>= 0.8.0)
   jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)
   pg (>= 0.18, < 2.0)
@@ -217,7 +221,6 @@ DEPENDENCIES
   rails (~> 6.0.0.rc1)
   redis (~> 4.0)
   rspec-rails
-  rubocop-rails
   shoulda-matchers
   spring
   spring-watcher-listen (~> 2.0.0)

@@ -17,9 +17,8 @@ group :development, :test do
 end
 
 group :development do
-  gem 'gnar-style'
+  gem 'gnar-style', '>= 0.8.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
-  gem 'rubocop-rails'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 end

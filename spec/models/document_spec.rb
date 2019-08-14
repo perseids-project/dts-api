@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe Document, type: :model do
   it { should belong_to(:collection) }
 
+  it { should have_many(:citation_types) }
+  it { should have_many(:fragments) }
+
   it { should validate_presence_of(:urn) }
   it { should validate_presence_of(:xml) }
 

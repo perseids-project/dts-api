@@ -1,3 +1,5 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  get 'collections', to: 'collections#dts'
+  get 'navigation', to: 'navigations#dts'
+  get 'documents', to: 'documents#dts'
 end

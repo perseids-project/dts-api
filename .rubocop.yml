@@ -8,3 +8,8 @@ Metrics/LineLength:
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
+
+Metrics/MethodLength:
+  Max: 15
+  ExcludedMethods:
+    - as_json

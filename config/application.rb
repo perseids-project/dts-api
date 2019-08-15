@@ -34,16 +34,22 @@ module Dts
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    latin = { title: 'latin', urn: 'urn:perseids:latinLit' }
+    greek = { title: 'greek', urn: 'urn:perseids:greekLit' }
+    farsi = { title: 'farsiLit', urn: 'urn:perseids:farsiLit' }
+    hebrew = { title: 'hebrew', urn: 'urn:perseids:hebrewLit' }
+    other = { title: 'other', urn: 'urn:perseids:otherLit' }
+
     config.dts_repositories = [
-      { name: 'canonical-latinLit', url: 'https://github.com/PerseusDL/canonical-latinLit' },
-      { name: 'canonical-greekLit', url: 'https://github.com/PerseusDL/canonical-greekLit' },
-      { name: 'canonical-farsiLit', url: 'https://github.com/PerseusDL/canonical-farsiLit' },
-      { name: 'canonical-pdlpsci', url: 'https://github.com/PerseusDL/canonical-pdlpsci' },
-      { name: 'csel-dev', url: 'https://github.com/OpenGreekAndLatin/csel-dev' },
-      { name: 'canonical-pdlrefwk', url: 'https://github.com/PerseusDL/canonical-pdlrefwk' },
-      { name: 'First1KGreek', url: 'https://github.com/OpenGreekAndLatin/First1KGreek' },
-      { name: 'priapeia', url: 'https://github.com/lascivaroma/priapeia' },
-      { name: 'ancJewLitCTS', url: 'https://github.com/hlapin/ancJewLitCTS' },
+      { name: 'canonical-latinLit', url: 'https://github.com/PerseusDL/canonical-latinLit', collection: latin },
+      { name: 'canonical-greekLit', url: 'https://github.com/PerseusDL/canonical-greekLit', collection: greek },
+      { name: 'canonical-farsiLit', url: 'https://github.com/PerseusDL/canonical-farsiLit', collection: farsi },
+      { name: 'canonical-pdlpsci', url: 'https://github.com/PerseusDL/canonical-pdlpsci', collection: other },
+      { name: 'csel-dev', url: 'https://github.com/OpenGreekAndLatin/csel-dev', collection: latin },
+      { name: 'canonical-pdlrefwk', url: 'https://github.com/PerseusDL/canonical-pdlrefwk', collection: other },
+      { name: 'First1KGreek', url: 'https://github.com/OpenGreekAndLatin/First1KGreek', collection: greek },
+      { name: 'priapeia', url: 'https://github.com/lascivaroma/priapeia', collection: latin },
+      { name: 'ancJewLitCTS', url: 'https://github.com/hlapin/ancJewLitCTS', collection: hebrew },
     ]
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_14_183615) do
+ActiveRecord::Schema.define(version: 2019_08_15_145324) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -26,6 +26,18 @@ ActiveRecord::Schema.define(version: 2019_08_14_183615) do
     t.index ["document_id", "level"], name: "index_citation_types_on_document_id_and_level", unique: true
     t.index ["document_id"], name: "index_citation_types_on_document_id"
     t.index ["uuid"], name: "index_citation_types_on_uuid", unique: true
+  end
+
+  create_table "collection_titles", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "collection_id", null: false
+    t.string "title", null: false
+    t.string "language", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["collection_id", "language"], name: "index_collection_titles_on_collection_id_and_language", unique: true
+    t.index ["collection_id"], name: "index_collection_titles_on_collection_id"
+    t.index ["uuid"], name: "index_collection_titles_on_uuid", unique: true
   end
 
   create_table "collections", force: :cascade do |t|
@@ -71,6 +83,7 @@ ActiveRecord::Schema.define(version: 2019_08_14_183615) do
   end
 
   add_foreign_key "citation_types", "documents"
+  add_foreign_key "collection_titles", "collections"
   add_foreign_key "collections", "collections", column: "parent_id"
   add_foreign_key "documents", "collections"
   add_foreign_key "fragments", "documents"

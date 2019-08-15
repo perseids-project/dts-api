@@ -13,11 +13,13 @@ class CollectionPresenter < ApplicationPresenter
     from_model(model: Collection.find_by(urn: id), nav: nav)
   end
 
-  def self.from_model(model:, nav: 'children')
-    if nav == 'children'
-      members = model.children.map { |c| from_model(model: c) }
+  def self.from_model(model:, nav: 'children', nested: false)
+    if nested
+      members = nil
+    elsif nav == 'children'
+      members = model.children.map { |c| from_model(model: c, nested: true) }
     elsif nav == 'parents'
-      parent = model.parent ? from_model(model: model.parent) : default
+      parent = model.parent ? from_model(model: model.parent, nested: true) : default(nested: true)
 
       members = [parent]
     end
@@ -30,20 +32,26 @@ class CollectionPresenter < ApplicationPresenter
     )
   end
 
-  def self.default(nav: 'children')
+  def self.default(nav: 'children', nested: false)
     children = Collection.where(parent_id: nil)
+
+    if nested
+      members = nil
+    elsif nav == 'children'
+      members = children.map { |c| from_model(model: c, nested: true) }
+    elsif nav == 'parents'
+      members = []
+    end
 
     new(
       id: 'default',
       title: 'Root',
       total_items: children.count,
-      member: nav == 'children' ? children.map { |c| from_model(model: c) } : [],
+      member: members,
     )
   end
 
   def as_json(options = nil)
-    nested = options&.key?(:nested) ? options[:nested] : false
-
     json = {
       '@id': id,
       '@type': 'Collection',
@@ -51,13 +59,13 @@ class CollectionPresenter < ApplicationPresenter
       title: title,
     }
 
-    unless nested
+    if member
       json[:'@context'] = {
         '@vocab': 'https://www.w3.org/ns/hydra/core#',
         dc: 'http://purl.org/dc/terms/',
         dts: 'https://w3id.org/dts/api#',
       }
-      json[:member] = member.map { |c| c.as_json(nested: true) }
+      json[:member] = member.map(&:as_json)
     end
 
     json.as_json(options)

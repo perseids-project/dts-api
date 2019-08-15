@@ -1,19 +1,33 @@
+require 'utils'
+
 class Git
+  include Utils
+
   def self.clone_or_update!(name, url, commit)
-    clone!(name, url) unless File.exist?(path(name))
-
-    update!(name, commit)
+    new(name, url, commit).clone_or_update!
   end
 
-  def self.path(*dirs)
-    Rails.root.join('texts', *dirs).to_s
+  def initialize(name, url, commit)
+    @name = name
+    @url = url
+    @commit = commit
   end
 
-  def self.clone!(name, url)
+  def clone_or_update!
+    clone! unless File.exist?(path(name))
+
+    update!
+  end
+
+  private
+
+  attr_reader :name, :url, :commit
+
+  def clone!
     system('git', 'clone', '--branch', 'master', '--single-branch', '--depth', '1', url, path(name))
   end
 
-  def self.update!(name, commit)
+  def update!
     system('git', '-C', path(name), 'fetch', '--depth', '1')
     system('git', '-C', path(name), 'reset', '--hard', commit)
   end

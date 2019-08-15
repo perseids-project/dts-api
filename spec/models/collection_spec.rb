@@ -5,6 +5,7 @@ RSpec.describe Collection, type: :model do
 
   it { should have_many(:children).class_name('Collection') }
   it { should have_many(:documents) }
+  it { should have_many(:collection_titles) }
 
   it { should validate_presence_of(:urn) }
   it { should validate_presence_of(:title) }

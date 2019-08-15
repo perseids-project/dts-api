@@ -22,12 +22,8 @@ RSpec.describe Document, type: :model do
 
     subject(:document) { Document.new(urn: 'urn', xml: '<test></test>', collection: collection) }
 
-    it 'beautifies the xml on save' do
-      expect(document.xml).to eq('<test></test>')
+    before { document.save }
 
-      document.save
-
-      expect(document.xml).to eq(%(<?xml version="1.0"?>\n<test/>\n))
-    end
+    its(:xml) { should eq(%(<?xml version="1.0"?>\n<test/>\n)) }
   end
 end

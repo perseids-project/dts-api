@@ -3,12 +3,13 @@ source 'https://rubygems.org'
 ruby '2.6.0'
 
 gem 'bootsnap', '>= 1.4.2', require: false
+gem 'iso-639'
 gem 'nokogiri'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'puma', '~> 3.11'
 gem 'rack-cors'
 gem 'rails', '~> 6.0.0.rc1'
-gem 'redis', '~> 4.0'
+gem 'redis', '~> 4.0', require: false
 
 group :development, :test do
   gem 'factory_bot_rails'
@@ -24,5 +25,6 @@ group :development do
 end
 
 group :test do
+  gem 'rspec-its'
   gem 'shoulda-matchers'
 end

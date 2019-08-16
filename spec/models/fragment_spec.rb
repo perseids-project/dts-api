@@ -23,4 +23,10 @@ RSpec.describe Fragment, type: :model do
     it { should validate_uniqueness_of(:ref).scoped_to(:document_id) }
     it { should validate_uniqueness_of(:rank).scoped_to([:document_id, :ref]) }
   end
+
+  describe 'xml beautification' do
+    subject(:fragment) { Fragment.new(xml: '<test></test>') }
+
+    its(:xml) { should eq(%(<?xml version="1.0"?>\n<test/>\n)) }
+  end
 end

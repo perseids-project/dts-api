@@ -17,12 +17,8 @@ RSpec.describe Document, type: :model do
     it { should validate_uniqueness_of(:urn) }
   end
 
-  describe '#beautify_xml' do
-    let(:collection) { Collection.new(urn: 'urn', title: 'title') }
-
-    subject(:document) { Document.new(urn: 'urn', xml: '<test></test>', collection: collection) }
-
-    before { document.save }
+  describe 'xml beautification' do
+    subject(:document) { Document.new(xml: '<test></test>') }
 
     its(:xml) { should eq(%(<?xml version="1.0"?>\n<test/>\n)) }
   end

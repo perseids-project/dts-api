@@ -5,6 +5,9 @@ RSpec.describe 'Collections', type: :request do
   let!(:magazines) { Collection.create(urn: 'magazines', title: 'collection of magazines') }
   let!(:fiction) { Collection.create(urn: 'fiction', title: 'fiction books', parent: books) }
   let!(:nonfiction) { Collection.create(urn: 'nonfiction', title: 'nonfiction books', parent: books) }
+  let!(:news) { Collection.create(urn: 'news', title: 'news magazines', parent: magazines, language: 'en') }
+  let!(:news_title_en) { CollectionTitle.create(title: 'news magazines', language: 'en', collection: news) }
+  let!(:news_title_fr) { CollectionTitle.create(title: "magazines d'information", language: 'fr', collection: news) }
 
   it 'lists all top-level collections' do
     get '/collections'
@@ -21,7 +24,7 @@ RSpec.describe 'Collections', type: :request do
       '@type' => 'Collection',
       'member' => [
         { '@id' => 'books', '@type' => 'Collection', 'title' => 'collection of books', 'totalItems' => 2 },
-        { '@id' => 'magazines', '@type' => 'Collection', 'title' => 'collection of magazines', 'totalItems' => 0 },
+        { '@id' => 'magazines', '@type' => 'Collection', 'title' => 'collection of magazines', 'totalItems' => 1 },
       ],
       'title' => 'Root',
       'totalItems' => 2,
@@ -50,6 +53,76 @@ RSpec.describe 'Collections', type: :request do
     )
   end
 
+  it 'lists title and language information' do
+    get '/collections/?id=news'
+
+    expect(response.content_type).to eq('application/ld+json; charset=utf-8')
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)).to match(
+      '@context' => {
+        '@vocab' => 'https://www.w3.org/ns/hydra/core#',
+        'dc' => 'http://purl.org/dc/terms/',
+        'dts' => 'https://w3id.org/dts/api#',
+      },
+      '@id' => 'news',
+      '@type' => 'Collection',
+      'dts:dublincore' => {
+        'dc:language' => 'en',
+        'dc:title' => [
+          {
+            '@language' => 'en',
+            '@value' => 'news magazines',
+          },
+          {
+            '@language' => 'fr',
+            '@value' => "magazines d'information",
+          },
+        ],
+      },
+      'title' => 'news magazines',
+      'totalItems' => 0,
+    )
+  end
+
+  it 'lists title and language information of members' do
+    get '/collections/?id=magazines'
+
+    expect(response.content_type).to eq('application/ld+json; charset=utf-8')
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)).to match(
+      '@context' => {
+        '@vocab' => 'https://www.w3.org/ns/hydra/core#',
+        'dc' => 'http://purl.org/dc/terms/',
+        'dts' => 'https://w3id.org/dts/api#',
+      },
+      '@id' => 'magazines',
+      '@type' => 'Collection',
+      'member' => [
+        {
+          '@id' => 'news',
+          '@type' => 'Collection',
+          'dts:dublincore' => {
+            'dc:language' => 'en',
+            'dc:title' => [
+              {
+                '@language' => 'en',
+                '@value' => 'news magazines',
+              },
+              {
+                '@language' => 'fr',
+                '@value' => "magazines d'information",
+              },
+            ],
+          },
+          'title' => 'news magazines',
+          'totalItems' => 0,
+        },
+      ],
+      'title' => 'collection of magazines',
+      'totalItems' => 1,
+    )
+  end
+
   it 'shows that the default collection has no parent' do
     get '/collections/?nav=parents'
 
@@ -63,7 +136,6 @@ RSpec.describe 'Collections', type: :request do
       },
       '@id' => 'default',
       '@type' => 'Collection',
-      'member' => [],
       'title' => 'Root',
       'totalItems' => 2,
     )

@@ -25,6 +25,7 @@ group :development do
 end
 
 group :test do
+  gem 'fakefs', require: 'fakefs/safe'
   gem 'rspec-its'
   gem 'shoulda-matchers'
 end

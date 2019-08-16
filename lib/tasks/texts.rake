@@ -12,7 +12,7 @@ namespace :texts do
   desc 'Create or update collections in database'
   task collections: :environment do
     Rails.configuration.dts_repositories.each do |repository|
-      Parser.parse!(repository[:name], repository[:collection][:title], repository[:collection][:urn])
+      Parser.parse!(repository[:name], Rails.configuration.dts_collections)
     end
   end
 end

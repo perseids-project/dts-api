@@ -3,49 +3,54 @@ require 'utils'
 class Parser
   include Utils
 
-  def self.parse!(name, title, urn)
-    new(name, title, urn).parse!
+  def self.parse!(name, collections)
+    new(name, collections).parse!
   end
 
-  def initialize(name, title, urn)
+  def initialize(name, collections)
     @name = name
-    @title = title
-    @urn = urn
+    @collections = collections
   end
 
   def parse!
-    parent = Collection.find_or_create_by!(title: title, urn: urn)
-
     find_group_cts_files.each do |group_file|
-      parse_group_cts_file(parent, group_file)
+      parse_group_cts_file(group_file)
     end
   end
 
-  attr_reader :name, :title, :urn
+  attr_reader :name, :collections
 
   private
 
   def find_group_cts_files
-    Dir.glob(path(name, 'data', '*', '__cts__.xml'))
+    Dir.glob(path(name, 'data', '*', '__cts__.xml')).sort
   end
 
   def find_work_cts_files(group_cts_file)
     group_cts_directory = File.dirname(group_cts_file)
 
-    Dir.glob(File.join(group_cts_directory, '*', '__cts__.xml'))
+    Dir.glob(File.join(group_cts_directory, '*', '__cts__.xml')).sort
   end
 
-  def parse_group_cts_file(parent, file)
+  def parse_group_cts_file(file)
     cts = Nokogiri::XML(File.read(file))
 
     text_group = collect_tags(cts, 'textgroup')[0]
+    urn = text_group['urn']
 
-    collection = Collection.find_or_initialize_by(parent: parent, urn: text_group['urn'])
+    parent = find_or_create_parent(urn)
+    collection = Collection.find_or_initialize_by(parent: parent, urn: urn)
 
     group_names = collect_tags(text_group, 'groupname')
     build_collection_titles(collection, group_names)
 
     collection.save!
+  end
+
+  def find_or_create_parent(urn)
+    parent = collections.find { |c| urn =~ c[:match] }
+
+    Collection.find_or_create_by(urn: parent[:urn], title: parent[:title])
   end
 
   def collect_tags(xml, tag)

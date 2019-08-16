@@ -7,6 +7,7 @@ class CreateCollections < ActiveRecord::Migration[6.0]
       t.references :parent, foreign_key: { to_table: :collections }, index: true
 
       t.string :title, null: false
+      t.string :language
 
       t.timestamps null: false
     end

@@ -1,4 +1,6 @@
 class Collection < ApplicationRecord
+  include CanonicalizeLanguage
+
   belongs_to :parent, class_name: 'Collection', optional: true
 
   has_many :children, class_name: 'Collection', dependent: :destroy, foreign_key: :parent_id, inverse_of: :parent
@@ -7,4 +9,7 @@ class Collection < ApplicationRecord
 
   validates :urn, presence: true, uniqueness: true
   validates :title, presence: true
+  validates :language, language: true
+
+  canonicalize :language
 end

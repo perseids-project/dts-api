@@ -23,12 +23,24 @@ RSpec.describe Parser do
       FakeFS.deactivate!
     end
 
-    it 'creates the collections' do
+    it 'creates all collections' do
       expect(Collection.count).to eq(0)
 
       Parser.parse!('canonical-latinLit', dts_collections)
 
-      expect(Collection.count).to eq(5)
+      expect(Collection.count).to eq(7)
+    end
+
+    it 'creates all collection titles' do
+      expect(CollectionTitle.count).to eq(0)
+
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      expect(CollectionTitle.count).to eq(8)
+    end
+
+    it 'creates the first-level collections' do
+      Parser.parse!('canonical-latinLit', dts_collections)
 
       latin = Collection.find_by(urn: 'urn:perseids:latinLit')
       other = Collection.find_by(urn: 'urn:perseids:otherLit')
@@ -64,12 +76,8 @@ RSpec.describe Parser do
       ])
     end
 
-    it 'creates the collection titles' do
-      expect(CollectionTitle.count).to eq(0)
-
+    it 'creates the first-level collection titles' do
       Parser.parse!('canonical-latinLit', dts_collections)
-
-      expect(CollectionTitle.count).to eq(5)
 
       ovid = Collection.find_by(urn: 'urn:cts:latinLit:phi0959')
 
@@ -85,6 +93,42 @@ RSpec.describe Parser do
         an_object_having_attributes(
           title: 'Ὀβίδιος',
           language: 'grc',
+        ),
+      ])
+    end
+
+    it 'creates the second-level collections' do
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      ovid = Collection.find_by(urn: 'urn:cts:latinLit:phi0959')
+
+      expect(ovid.children.order(:id)).to match([
+        an_object_having_attributes(
+          urn: 'urn:cts:latinLit:phi0959.phi001',
+          title: 'Amores',
+          language: 'la',
+        ),
+        an_object_having_attributes(
+          urn: 'urn:cts:latinLit:phi0959.phi002',
+          title: 'Letters',
+          language: 'la',
+        ),
+      ])
+    end
+
+    it 'creates the second-level collection titles' do
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      letters = Collection.find_by(urn: 'urn:cts:latinLit:phi0959.phi002')
+
+      expect(letters.collection_titles.order(:id)).to match([
+        an_object_having_attributes(
+          title: 'Letters',
+          language: 'en',
+        ),
+        an_object_having_attributes(
+          title: 'Epistulae',
+          language: 'la',
         ),
       ])
     end

@@ -14,7 +14,7 @@ RSpec.describe CollectionTitle, type: :model do
     it { should validate_uniqueness_of(:language).scoped_to(:collection_id) }
   end
 
-  describe '#language_code_must_exist' do
+  describe 'language validations' do
     let(:collection) { Collection.new(urn: 'urn', title: 'title') }
     let(:language) { 'en' }
 
@@ -35,13 +35,10 @@ RSpec.describe CollectionTitle, type: :model do
     end
   end
 
-  describe '#canonicalize_language' do
-    let(:collection) { Collection.new(urn: 'urn', title: 'title') }
+  describe 'language canonicalization' do
     let(:language) { 'eng' }
 
-    subject(:collection_title) { CollectionTitle.new(title: 'title', language: language, collection: collection) }
-
-    before { collection_title.save }
+    subject(:collection_title) { CollectionTitle.new(language: language) }
 
     its(:language) { should eq('en') }
 

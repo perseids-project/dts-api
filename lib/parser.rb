@@ -14,7 +14,11 @@ class Parser
 
   def parse!
     find_group_cts_files.each do |group_file|
-      parse_group_cts_file(group_file)
+      parent = parse_group_cts_file(group_file)
+
+      find_work_cts_files(group_file).each do |work_file|
+        parse_work_cts_file(work_file, parent)
+      end
     end
   end
 
@@ -38,16 +42,33 @@ class Parser
     text_group = collect_tags(cts, 'textgroup')[0]
     urn = text_group['urn']
 
-    parent = find_or_create_parent(urn)
+    parent = find_or_create_group_parent(urn)
     collection = Collection.find_or_initialize_by(parent: parent, urn: urn)
 
     group_names = collect_tags(text_group, 'groupname')
     build_collection_titles(collection, group_names)
 
-    collection.save!
+    collection.tap(&:save!)
   end
 
-  def find_or_create_parent(urn)
+  def parse_work_cts_file(file, parent)
+    cts = Nokogiri::XML(File.read(file))
+
+    work = collect_tags(cts, 'work')[0]
+    urn = work['urn']
+    language = work['xml:lang']
+
+    collection = Collection.find_or_initialize_by(parent: parent, urn: urn)
+
+    collection.language = language if language.present?
+
+    titles = collect_tags(work, 'title')
+    build_collection_titles(collection, titles)
+
+    collection.tap(&:save!)
+  end
+
+  def find_or_create_group_parent(urn)
     parent = collections.find { |c| urn =~ c[:match] }
 
     Collection.find_or_create_by(urn: parent[:urn], title: parent[:title])
@@ -66,18 +87,18 @@ class Parser
     tags
   end
 
-  def build_collection_titles(collection, group_names)
+  def build_collection_titles(collection, tags)
     generic_title = nil
     collection.collection_titles = []
 
-    group_names.each do |group_name|
-      if group_name['xml:lang'].present?
+    tags.each do |tag|
+      if tag['xml:lang'].present?
         collection.collection_titles << CollectionTitle.new(
-          title: group_name.text,
-          language: group_name['xml:lang'],
+          title: tag.text,
+          language: tag['xml:lang'],
         )
       else
-        generic_title = group_name.text
+        generic_title = tag.text
       end
     end
 
@@ -85,10 +106,10 @@ class Parser
   end
 
   def set_title(collection, generic_title)
-    collection.collection_titles = collection.collection_titles.uniq { |ct| ISO_639.find(ct.language).alpha3 }
+    collection.collection_titles = collection.collection_titles.uniq(&:language)
 
     collection.title = generic_title ||
-                       collection.collection_titles.find { |ct| ISO_639.find(ct.language).alpha2 == 'en' }&.title ||
+                       collection.collection_titles.find { |ct| ct.language == 'en' }&.title ||
                        collection.collection_titles.first.title
   end
 end

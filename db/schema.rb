@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_15_145324) do
+ActiveRecord::Schema.define(version: 2019_08_16_174624) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -45,11 +45,36 @@ ActiveRecord::Schema.define(version: 2019_08_15_145324) do
     t.string "urn", null: false
     t.bigint "parent_id"
     t.string "title", null: false
+    t.string "language"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["parent_id"], name: "index_collections_on_parent_id"
     t.index ["urn"], name: "index_collections_on_urn", unique: true
     t.index ["uuid"], name: "index_collections_on_uuid", unique: true
+  end
+
+  create_table "document_descriptions", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "document_id", null: false
+    t.string "description", null: false
+    t.string "language", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["document_id", "language"], name: "index_document_descriptions_on_document_id_and_language", unique: true
+    t.index ["document_id"], name: "index_document_descriptions_on_document_id"
+    t.index ["uuid"], name: "index_document_descriptions_on_uuid", unique: true
+  end
+
+  create_table "document_titles", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "document_id", null: false
+    t.string "title", null: false
+    t.string "language", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["document_id", "language"], name: "index_document_titles_on_document_id_and_language", unique: true
+    t.index ["document_id"], name: "index_document_titles_on_document_id"
+    t.index ["uuid"], name: "index_document_titles_on_uuid", unique: true
   end
 
   create_table "documents", force: :cascade do |t|
@@ -58,6 +83,7 @@ ActiveRecord::Schema.define(version: 2019_08_15_145324) do
     t.bigint "collection_id", null: false
     t.xml "xml", null: false
     t.string "language"
+    t.string "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["collection_id"], name: "index_documents_on_collection_id"
@@ -85,6 +111,8 @@ ActiveRecord::Schema.define(version: 2019_08_15_145324) do
   add_foreign_key "citation_types", "documents"
   add_foreign_key "collection_titles", "collections"
   add_foreign_key "collections", "collections", column: "parent_id"
+  add_foreign_key "document_descriptions", "documents"
+  add_foreign_key "document_titles", "documents"
   add_foreign_key "documents", "collections"
   add_foreign_key "fragments", "documents"
   add_foreign_key "fragments", "fragments", column: "parent_id"

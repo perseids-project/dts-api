@@ -8,6 +8,7 @@ class CreateDocuments < ActiveRecord::Migration[6.0]
 
       t.xml :xml, null: false
       t.string :language
+      t.string :description
 
       t.timestamps null: false
     end

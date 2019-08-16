@@ -15,4 +15,18 @@ RSpec.describe Collection, type: :model do
 
     it { should validate_uniqueness_of(:urn) }
   end
+
+  describe 'language canonicalization' do
+    let(:language) { 'eng' }
+
+    subject(:collection) { Collection.new(language: language) }
+
+    its(:language) { should eq('en') }
+
+    context 'the language cannot be shortened' do
+      let(:language) { 'grc' }
+
+      its(:language) { should eq('grc') }
+    end
+  end
 end

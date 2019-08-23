@@ -44,15 +44,15 @@ module Dts
     ]
 
     config.dts_repositories = [
-      { name: 'canonical-latinLit', url: 'https://github.com/PerseusDL/canonical-latinLit' },
-      { name: 'canonical-greekLit', url: 'https://github.com/PerseusDL/canonical-greekLit' },
-      { name: 'canonical-farsiLit', url: 'https://github.com/PerseusDL/canonical-farsiLit' },
-      { name: 'canonical-pdlpsci', url: 'https://github.com/PerseusDL/canonical-pdlpsci' },
       { name: 'csel-dev', url: 'https://github.com/OpenGreekAndLatin/csel-dev' },
       { name: 'canonical-pdlrefwk', url: 'https://github.com/PerseusDL/canonical-pdlrefwk' },
       { name: 'First1KGreek', url: 'https://github.com/OpenGreekAndLatin/First1KGreek' },
       { name: 'priapeia', url: 'https://github.com/lascivaroma/priapeia' },
       { name: 'ancJewLitCTS', url: 'https://github.com/hlapin/ancJewLitCTS' },
+      { name: 'canonical-latinLit', url: 'https://github.com/PerseusDL/canonical-latinLit' },
+      { name: 'canonical-greekLit', url: 'https://github.com/PerseusDL/canonical-greekLit' },
+      { name: 'canonical-farsiLit', url: 'https://github.com/PerseusDL/canonical-farsiLit' },
+      { name: 'canonical-pdlpsci', url: 'https://github.com/PerseusDL/canonical-pdlpsci' },
     ]
   end
 end

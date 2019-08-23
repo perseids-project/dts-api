@@ -7,7 +7,7 @@ class CreateFragments < ActiveRecord::Migration[6.0]
       t.references :document, null: false, foreign_key: true, index: true
       t.references :parent, foreign_key: { to_table: :fragments }, index: true
 
-      t.xml :xml, null: false
+      t.text :xml, null: false
       t.integer :level, null: false
       t.integer :rank, null: false
 

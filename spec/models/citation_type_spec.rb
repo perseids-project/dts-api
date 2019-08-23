@@ -10,7 +10,9 @@ RSpec.describe CitationType, type: :model do
 
   describe 'uniqueness validations' do
     let(:collection) { Collection.new(urn: 'urn', title: 'title') }
-    let(:document) { Document.new(urn: 'urn', xml: '<test/>', collection: collection) }
+    let(:document) do
+      Document.new(urn: 'urn', xml: '<test/>', title: 'document', language: 'en', collection: collection)
+    end
 
     subject(:citation_type) { CitationType.new(level: 1, citation_type: 'passage', document: document) }
 

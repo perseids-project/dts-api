@@ -39,6 +39,30 @@ RSpec.describe Parser do
       expect(CollectionTitle.count).to eq(8)
     end
 
+    it 'creates all documents' do
+      expect(Document.count).to eq(0)
+
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      expect(Document.count).to eq(2)
+    end
+
+    it 'creates all document titles' do
+      expect(DocumentTitle.count).to eq(0)
+
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      expect(DocumentTitle.count).to eq(2)
+    end
+
+    it 'creates all document descriptions' do
+      expect(DocumentDescription.count).to eq(0)
+
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      expect(DocumentDescription.count).to eq(2)
+    end
+
     it 'creates the first-level collections' do
       Parser.parse!('canonical-latinLit', dts_collections)
 
@@ -128,6 +152,63 @@ RSpec.describe Parser do
         ),
         an_object_having_attributes(
           title: 'Epistulae',
+          language: 'la',
+        ),
+      ])
+    end
+
+    it 'creates the documents' do
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      amores = Collection.find_by(urn: 'urn:cts:latinLit:phi0959.phi001')
+
+      expect(amores.documents.order(:id)).to match([
+        an_object_having_attributes(
+          urn: 'urn:cts:latinLit:phi0959.phi001.perseus-lat2',
+          xml: a_string_including('<l n="1">Arma gravi numero violentaque bella parabam</l>'),
+          title: 'Amores',
+          language: 'la',
+          description: 'Amores, The Art of Love in Three Books The remedy of love. The art of beauty. The court of love. The history of love amours.',
+        ),
+        an_object_having_attributes(
+          urn: 'urn:cts:latinLit:phi0959.phi001.perseus-eng2',
+          xml: a_string_including('<l n="1">For mighty wars I thought to tune my lute,</l>'),
+          title: 'Amores, Ovid',
+          language: 'en',
+          description: 'Amores, Ovid',
+        ),
+      ])
+    end
+
+    it 'creates the document titles' do
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      english = Document.find_by(urn: 'urn:cts:latinLit:phi0959.phi001.perseus-eng2')
+
+      expect(english.document_titles.order(:id)).to match([
+        an_object_having_attributes(
+          title: 'Amores, Ovid',
+          language: 'en',
+        ),
+        an_object_having_attributes(
+          title: 'Amores, Ovidius',
+          language: 'la',
+        ),
+      ])
+    end
+
+    it 'creates the document descriptions' do
+      Parser.parse!('canonical-latinLit', dts_collections)
+
+      latin = Document.find_by(urn: 'urn:cts:latinLit:phi0959.phi001.perseus-lat2')
+
+      expect(latin.document_descriptions.order(:id)).to match([
+        an_object_having_attributes(
+          description: 'Amores, The Art of Love in Three Books The remedy of love. The art of beauty. The court of love. The history of love amours.',
+          language: 'en',
+        ),
+        an_object_having_attributes(
+          description: 'Amores, Epistulae, Medicamina faciei femineae, Ars amatoria, Remedia amoris, R. Ehwald, edidit ex Rudolphi Merkelii recognitione, Leipzig, B. G. Teubner, 1907',
           language: 'la',
         ),
       ])

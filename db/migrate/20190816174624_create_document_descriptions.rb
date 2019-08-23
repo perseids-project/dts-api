@@ -12,6 +12,5 @@ class CreateDocumentDescriptions < ActiveRecord::Migration[6.0]
     end
 
     add_index :document_descriptions, :uuid, unique: true
-    add_index :document_descriptions, [:document_id, :language], unique: true
   end
 end

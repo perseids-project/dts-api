@@ -2,11 +2,11 @@ class DublinCorePresenter < ApplicationPresenter
   attr_accessor :titles, :language
 
   def self.from_collection(collection)
-    titles = collection.collection_titles.map do |ct|
+    titles = collection.collection_titles.order(:id).map do |ct|
       TitlePresenter.from_collection_title(ct)
     end
 
-    new(titles: titles, language: collection.language)
+    new(titles: titles, language: collection.available_languages)
   end
 
   def self.default

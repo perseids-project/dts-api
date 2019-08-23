@@ -12,6 +12,5 @@ class CreateCollectionTitles < ActiveRecord::Migration[6.0]
     end
 
     add_index :collection_titles, :uuid, unique: true
-    add_index :collection_titles, [:collection_id, :language], unique: true
   end
 end

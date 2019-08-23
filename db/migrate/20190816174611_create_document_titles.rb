@@ -12,6 +12,5 @@ class CreateDocumentTitles < ActiveRecord::Migration[6.0]
     end
 
     add_index :document_titles, :uuid, unique: true
-    add_index :document_titles, [:document_id, :language], unique: true
   end
 end

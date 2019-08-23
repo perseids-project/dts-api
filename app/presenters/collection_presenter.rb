@@ -1,32 +1,12 @@
 class CollectionPresenter < ApplicationPresenter
   attr_accessor :id, :total_items, :title, :member, :nested, :dublincore
 
-  def self.from_params!(id:, nav:)
-    raise BadRequestException unless %w[children parents].member?(nav)
-
-    return default(nav: nav) if id == 'default'
-
-    collection = Collection.find_by(urn: id)
-
-    raise NotFoundException unless collection
-
-    from_collection(Collection.find_by(urn: id), nav: nav)
-  end
-
   def self.from_collection(collection, nav: 'children', nested: false)
-    if nested
-      members = nil
-    elsif nav == 'children'
-      members = collection.children.map { |c| from_collection(c, nested: true) }
-    elsif nav == 'parents'
-      members = [collection.parent ? from_collection(collection.parent, nested: true) : default(nested: true)]
-    end
-
     new(
       id: collection.urn,
       title: collection.title,
-      total_items: collection.children.count,
-      member: members,
+      total_items: collection.total_items,
+      member: nested ? nil : members(collection, nav),
       nested: nested,
       dublincore: DublinCorePresenter.from_collection(collection),
     )
@@ -51,6 +31,21 @@ class CollectionPresenter < ApplicationPresenter
     )
   end
 
+  def self.members(collection, nav)
+    if nav == 'children'
+      children = collection.children.order(:id).map { |c| from_collection(c, nested: true) }
+      documents = collection.documents.order(:id).map { |d| ResourcePresenter.from_document(d, nested: true) }
+
+      return children + documents
+    end
+
+    return [from_collection(collection.parent, nested: true)] if collection.parent
+
+    [default(nested: true)]
+  end
+
+  private_class_method :members
+
   def json
     json = {
       '@id': id,
@@ -67,7 +62,7 @@ class CollectionPresenter < ApplicationPresenter
       }
     end
 
-    json[:member] = member.map(&:as_json) if member.present?
+    json[:member] = member if member.present?
 
     json.merge(dublincore.json)
   end

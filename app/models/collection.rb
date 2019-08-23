@@ -12,4 +12,12 @@ class Collection < ApplicationRecord
   validates :language, language: true
 
   canonicalize :language
+
+  def total_items
+    children.count + documents.count
+  end
+
+  def available_languages
+    documents.size > 1 ? documents.map(&:language).sort : language
+  end
 end

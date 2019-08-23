@@ -35,7 +35,6 @@ ActiveRecord::Schema.define(version: 2019_08_16_174624) do
     t.string "language", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["collection_id", "language"], name: "index_collection_titles_on_collection_id_and_language", unique: true
     t.index ["collection_id"], name: "index_collection_titles_on_collection_id"
     t.index ["uuid"], name: "index_collection_titles_on_uuid", unique: true
   end
@@ -81,8 +80,9 @@ ActiveRecord::Schema.define(version: 2019_08_16_174624) do
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.string "urn", null: false
     t.bigint "collection_id", null: false
-    t.xml "xml", null: false
-    t.string "language"
+    t.text "xml", null: false
+    t.string "title", null: false
+    t.string "language", null: false
     t.string "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -96,7 +96,7 @@ ActiveRecord::Schema.define(version: 2019_08_16_174624) do
     t.string "ref", null: false
     t.bigint "document_id", null: false
     t.bigint "parent_id"
-    t.xml "xml", null: false
+    t.text "xml", null: false
     t.integer "level", null: false
     t.integer "rank", null: false
     t.datetime "created_at", precision: 6, null: false

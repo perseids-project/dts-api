@@ -14,19 +14,17 @@ RSpec.describe Fragment, type: :model do
   it { should validate_numericality_of(:level).only_integer }
   it { should validate_numericality_of(:rank).only_integer }
 
+  it { should beautify_xml_of(:xml) }
+
   describe 'uniqueness validations' do
     let(:collection) { Collection.new(urn: 'urn', title: 'title') }
-    let(:document) { Document.new(urn: 'urn', xml: '<test><div/></test>', collection: collection) }
+    let(:document) do
+      Document.new(urn: 'urn', xml: '<test><div/></test>', title: 'document', language: 'en', collection: collection)
+    end
 
     subject(:fragment) { Fragment.new(ref: 'ref', xml: '<div/>', level: 1, rank: 1, document: document) }
 
     it { should validate_uniqueness_of(:ref).scoped_to(:document_id) }
     it { should validate_uniqueness_of(:rank).scoped_to([:document_id, :ref]) }
-  end
-
-  describe 'xml beautification' do
-    subject(:fragment) { Fragment.new(xml: '<test></test>') }
-
-    its(:xml) { should eq(%(<?xml version="1.0"?>\n<test/>\n)) }
   end
 end

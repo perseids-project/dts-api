@@ -60,12 +60,22 @@ class Parser
 
     collection = Collection.find_or_initialize_by(parent: parent, urn: urn)
 
-    collection.language = language if language.present?
+    collection.language = language.presence
 
     titles = collect_tags(work, 'title')
     build_collection_titles(collection, titles)
+    build_documents(file, collection, work)
 
     collection.tap(&:save!)
+  end
+
+  def build_documents(file, collection, work)
+    directory = File.dirname(file)
+
+    editions = collect_tags(work, 'edition')
+    translations = collect_tags(work, 'translation')
+
+    build_documents_from_tags(editions + translations, directory, collection)
   end
 
   def find_or_create_group_parent(urn)
@@ -92,24 +102,95 @@ class Parser
     collection.collection_titles = []
 
     tags.each do |tag|
-      if tag['xml:lang'].present?
+      if tag['xml:lang'].present? && tag.text.squish.present?
         collection.collection_titles << CollectionTitle.new(
-          title: tag.text,
+          title: tag.text.squish,
           language: tag['xml:lang'],
         )
       else
-        generic_title = tag.text
+        generic_title = tag.text.squish
       end
     end
 
-    set_title(collection, generic_title)
+    set_collection_title(collection, generic_title)
   end
 
-  def set_title(collection, generic_title)
-    collection.collection_titles = collection.collection_titles.uniq(&:language)
+  def build_documents_from_tags(tags, directory, collection)
+    collection.documents = []
 
-    collection.title = generic_title ||
-                       collection.collection_titles.find { |ct| ct.language == 'en' }&.title ||
+    tags.each do |edition|
+      urn = edition['urn']
+      language = edition['xml:lang'].presence || collection.language
+      filename = "#{urn.gsub(/\A.*:/, '')}.xml"
+      filepath = path(directory, filename)
+
+      next unless File.exist?(filepath)
+
+      document = Document.new(
+        urn: urn,
+        title: collection.title,
+        xml: File.read(filepath),
+        language: language,
+      )
+      build_document_titles_and_descriptions(document, edition)
+
+      collection.documents << document
+    end
+  end
+
+  def set_collection_title(collection, generic_title)
+    collection.title = generic_title.presence ||
+                       collection.collection_titles.select { |ct| ct.language == 'en' }.first&.title.presence ||
                        collection.collection_titles.first.title
+  end
+
+  def build_document_titles_and_descriptions(document, work)
+    titles = collect_tags(work, 'label')
+    descriptions = collect_tags(work, 'description')
+
+    generic_title = nil
+    document.document_titles = []
+
+    titles.each do |title|
+      if title['xml:lang'].present? && title.text.squish.present?
+        document.document_titles << DocumentTitle.new(
+          title: title.text.squish,
+          language: title['xml:lang'],
+        )
+      else
+        generic_title = title.text.squish
+      end
+    end
+
+    set_document_title(document, generic_title)
+
+    generic_description = nil
+    document.document_descriptions = []
+
+    descriptions.each do |description|
+      if description['xml:lang'].present? && description.text.squish.present?
+        document.document_descriptions << DocumentDescription.new(
+          description: description.text.squish,
+          language: description['xml:lang'],
+        )
+      else
+        generic_description = description.text.squish
+      end
+    end
+
+    set_document_description(document, generic_description)
+  end
+
+  def set_document_title(document, generic_title)
+    document.title = generic_title.presence ||
+                     document.document_titles.select { |dt| dt.language == 'en' }.first&.title&.presence ||
+                     document.document_titles.first.title
+  end
+
+  def set_document_description(document, generic_description)
+    document.description = generic_description.presence ||
+                           document.document_descriptions.select { |dd| dd.language == 'en' }.first&.description.presence ||
+                           document.document_descriptions.first&.description.presence ||
+                           document.title
   end
 end

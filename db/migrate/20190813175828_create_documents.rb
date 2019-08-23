@@ -6,8 +6,9 @@ class CreateDocuments < ActiveRecord::Migration[6.0]
 
       t.references :collection, null: false, foreign_key: true, index: true
 
-      t.xml :xml, null: false
-      t.string :language
+      t.text :xml, null: false
+      t.string :title, null: false
+      t.string :language, null: false
       t.string :description
 
       t.timestamps null: false

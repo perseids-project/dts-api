@@ -168,7 +168,8 @@ RSpec.describe Parser do
           xml: a_string_including('<l n="1">Arma gravi numero violentaque bella parabam</l>'),
           title: 'Amores',
           language: 'la',
-          description: 'Amores, The Art of Love in Three Books The remedy of love. The art of beauty. The court of love. The history of love amours.',
+          description: 'Amores, The Art of Love in Three Books The remedy of love. ' \
+                       'The art of beauty. The court of love. The history of love amours.',
         ),
         an_object_having_attributes(
           urn: 'urn:cts:latinLit:phi0959.phi001.perseus-eng2',
@@ -204,11 +205,13 @@ RSpec.describe Parser do
 
       expect(latin.document_descriptions.order(:id)).to match([
         an_object_having_attributes(
-          description: 'Amores, The Art of Love in Three Books The remedy of love. The art of beauty. The court of love. The history of love amours.',
+          description: 'Amores, The Art of Love in Three Books The remedy of love. The art of beauty. ' \
+                       'The court of love. The history of love amours.',
           language: 'en',
         ),
         an_object_having_attributes(
-          description: 'Amores, Epistulae, Medicamina faciei femineae, Ars amatoria, Remedia amoris, R. Ehwald, edidit ex Rudolphi Merkelii recognitione, Leipzig, B. G. Teubner, 1907',
+          description: 'Amores, Epistulae, Medicamina faciei femineae, Ars amatoria, Remedia amoris, ' \
+                       'R. Ehwald, edidit ex Rudolphi Merkelii recognitione, Leipzig, B. G. Teubner, 1907',
           language: 'la',
         ),
       ])

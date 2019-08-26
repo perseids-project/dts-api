@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe DocumentDescription, type: :model do
-  it { should belong_to(:document) }
+RSpec.describe CollectionDescription, type: :model do
+  it { should belong_to(:collection) }
 
   it { should validate_presence_of(:description) }
   it { should validate_presence_of(:language) }

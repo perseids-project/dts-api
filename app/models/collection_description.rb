@@ -1,9 +1,9 @@
-class DocumentTitle < ApplicationRecord
+class CollectionDescription < ApplicationRecord
   include CanonicalizeLanguage
 
-  belongs_to :document
+  belongs_to :collection
 
-  validates :title, presence: true
+  validates :description, presence: true
   validates :language, presence: true, language: true
 
   canonicalize :language

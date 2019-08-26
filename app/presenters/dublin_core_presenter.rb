@@ -1,12 +1,16 @@
 class DublinCorePresenter < ApplicationPresenter
-  attr_accessor :titles, :language
+  attr_accessor :titles, :descriptions, :language
 
   def self.from_collection(collection)
     titles = collection.collection_titles.order(:id).map do |ct|
-      TitlePresenter.from_collection_title(ct)
+      DublinCoreItemPresenter.from_collection_title(ct)
     end
 
-    new(titles: titles, language: collection.available_languages)
+    descriptions = collection.collection_descriptions.order(:id).map do |cd|
+      DublinCoreItemPresenter.from_collection_description(cd)
+    end
+
+    new(titles: titles, descriptions: descriptions, language: collection.language)
   end
 
   def self.default
@@ -17,6 +21,7 @@ class DublinCorePresenter < ApplicationPresenter
     dublincore = {}
 
     dublincore[:'dc:title'] = titles if titles.present?
+    dublincore[:'dc:description'] = descriptions if descriptions.present?
     dublincore[:'dc:language'] = language if language.present?
 
     dublincore.present? ? { 'dts:dublincore': dublincore } : {}

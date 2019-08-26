@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Collections', type: :request do
-  let!(:books) { Collection.create(urn: 'books', title: 'collection of books') }
-  let!(:magazines) { Collection.create(urn: 'magazines', title: 'collection of magazines') }
+  let!(:root) { Collection.create(urn: 'default', title: 'Root') }
+  let!(:books) { Collection.create(urn: 'books', title: 'collection of books', parent: root) }
+  let!(:magazines) { Collection.create(urn: 'magazines', title: 'collection of magazines', parent: root) }
   let!(:fiction) { Collection.create(urn: 'fiction', title: 'fiction books', parent: books) }
   let!(:nonfiction) { Collection.create(urn: 'nonfiction', title: 'nonfiction books', parent: books) }
   let!(:news) { Collection.create(urn: 'news', title: 'news magazines', parent: magazines, language: 'en') }

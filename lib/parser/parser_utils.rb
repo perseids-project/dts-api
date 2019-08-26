@@ -16,5 +16,62 @@ class Parser
 
       tags
     end
+
+    def build_collection_titles(collection, titles)
+      generic_title = nil
+      collection.collection_titles = []
+
+      titles.each do |title|
+        text = title.text.squish
+
+        if title['xml:lang'].present? && text.present?
+          collection.collection_titles << CollectionTitle.new(
+            title: text,
+            language: title['xml:lang'],
+          )
+        else
+          generic_title = text
+        end
+      end
+
+      set_collection_title(collection, generic_title)
+    end
+
+    def build_collection_descriptions(collection, descriptions)
+      generic_description = nil
+      collection.collection_descriptions = []
+
+      descriptions.each do |description|
+        text = description.text.squish
+
+        if description['xml:lang'].present? && text.present?
+          collection.collection_descriptions << CollectionDescription.new(
+            description: text,
+            language: description['xml:lang'],
+          )
+        else
+          generic_description = text
+        end
+      end
+
+      set_collection_description(collection, generic_description)
+    end
+
+    def set_collection_title(collection, generic_title)
+      title = generic_title.presence ||
+              collection.collection_titles.select { |t| t.language == 'en' }.first&.title&.presence ||
+              collection.collection_titles.first.title
+
+      collection.title = title
+    end
+
+    def set_collection_description(collection, generic_description)
+      description = generic_description.presence ||
+                    collection.collection_descriptions.select { |d| d.language == 'en' }.first&.description.presence ||
+                    collection.collection_descriptions.first&.description.presence ||
+                    collection.title
+
+      collection.description = description
+    end
   end
 end

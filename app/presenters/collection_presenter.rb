@@ -1,55 +1,38 @@
 class CollectionPresenter < ApplicationPresenter
-  attr_accessor :id, :total_items, :title, :member, :nested, :dublincore
+  attr_accessor :id, :type, :total_items, :title, :description, :member, :nested, :nav, :dublincore
 
   def self.from_collection(collection, nav: 'children', nested: false)
     new(
       id: collection.urn,
+      type: collection.display_type.titleize,
       title: collection.title,
-      total_items: collection.total_items,
+      description: collection.description,
+      total_items: collection.children_count,
       member: nested ? nil : members(collection, nav),
       nested: nested,
+      nav: nav,
       dublincore: DublinCorePresenter.from_collection(collection),
     )
   end
 
-  def self.default(nav: 'children', nested: false)
-    children = Collection.where(parent_id: nil)
-
-    if nested || nav == 'parents'
-      members = nil
-    elsif nav == 'children'
-      members = children.map { |c| from_collection(c, nested: true) }
-    end
-
-    new(
-      id: 'default',
-      title: 'Root',
-      total_items: children.count,
-      member: members,
-      nested: nested,
-      dublincore: DublinCorePresenter.default,
-    )
-  end
-
   def self.members(collection, nav)
-    if nav == 'children'
-      children = collection.children.order(:id).map { |c| from_collection(c, nested: true) }
-      documents = collection.documents.order(:id).map { |d| ResourcePresenter.from_document(d, nested: true) }
-
-      return children + documents
+    if nav == 'parents' && collection.parent
+      [from_collection(collection.parent, nested: true)]
+    elsif nav == 'children'
+      collection.children.order(:id).map { |c| from_collection(c, nested: true) }
     end
-
-    return [from_collection(collection.parent, nested: true)] if collection.parent
-
-    [default(nested: true)]
   end
 
   private_class_method :members
 
+  def valid?
+    %w[children parents].member?(nav)
+  end
+
   def json
     json = {
       '@id': id,
-      '@type': 'Collection',
+      '@type': type,
       totalItems: total_items,
       title: title,
     }
@@ -62,6 +45,7 @@ class CollectionPresenter < ApplicationPresenter
       }
     end
 
+    json[:description] = description if description.present?
     json[:member] = member if member.present?
 
     json.merge(dublincore.json)

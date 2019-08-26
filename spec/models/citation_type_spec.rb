@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe CitationType, type: :model do
-  it { should belong_to(:document) }
+  it { should belong_to(:collection) }
 
   it { should validate_presence_of(:level) }
   it { should validate_presence_of(:citation_type) }
@@ -10,12 +10,9 @@ RSpec.describe CitationType, type: :model do
 
   describe 'uniqueness validations' do
     let(:collection) { Collection.new(urn: 'urn', title: 'title') }
-    let(:document) do
-      Document.new(urn: 'urn', xml: '<test/>', title: 'document', language: 'en', collection: collection)
-    end
 
-    subject(:citation_type) { CitationType.new(level: 1, citation_type: 'passage', document: document) }
+    subject(:citation_type) { CitationType.new(level: 1, citation_type: 'passage', collection: collection) }
 
-    it { should validate_uniqueness_of(:level).scoped_to(:document_id) }
+    it { should validate_uniqueness_of(:level).scoped_to(:collection_id) }
   end
 end

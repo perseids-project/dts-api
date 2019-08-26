@@ -62,7 +62,7 @@ class Parser
 
       titles = collect_tags(work, 'title')
       build_collection_titles(collection, titles)
-      DocumentParser.new(file, collection, work).build!
+      DocumentParser.new(file, collection, work).build
 
       collection.tap(&:save!)
     end
@@ -70,33 +70,11 @@ class Parser
     def find_or_create_group_parent(urn)
       parent = collections.find { |c| urn =~ c[:match] }
 
-      Collection.find_or_create_by(urn: parent[:urn], title: parent[:title])
+      Collection.find_or_create_by(urn: parent[:urn], title: parent[:title], parent: root_collection)
     end
 
-    def build_collection_titles(collection, tags)
-      generic_title = nil
-      collection.collection_titles = []
-
-      tags.each do |tag|
-        text = tag.text.squish
-
-        if tag['xml:lang'].present? && text.present?
-          collection.collection_titles << CollectionTitle.new(
-            title: text,
-            language: tag['xml:lang'],
-          )
-        else
-          generic_title = text
-        end
-      end
-
-      set_collection_title(collection, generic_title)
-    end
-
-    def set_collection_title(collection, generic_title)
-      collection.title = generic_title.presence ||
-                         collection.collection_titles.select { |ct| ct.language == 'en' }.first&.title.presence ||
-                         collection.collection_titles.first.title
+    def root_collection
+      @root_collection ||= Collection.find_or_create_by(urn: 'default', title: 'Root')
     end
   end
 end

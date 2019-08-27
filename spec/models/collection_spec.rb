@@ -41,4 +41,56 @@ RSpec.describe Collection, type: :model do
       its(:children_count) { should eq(1) }
     end
   end
+
+  describe '#last_page' do
+    let(:children_count) { 0 }
+
+    subject(:collection) { Collection.new(children_count: children_count) }
+
+    its(:last_page) { should eq(0) }
+
+    context 'there is one child' do
+      let(:children_count) { 1 }
+
+      its(:last_page) { should eq(1) }
+    end
+
+    context 'there are ten children' do
+      let(:children_count) { 10 }
+
+      its(:last_page) { should eq(1) }
+    end
+
+    context 'there are more than ten children' do
+      let(:children_count) { 19 }
+
+      its(:last_page) { should eq(2) }
+    end
+
+    context 'the page size is not ten' do
+      let(:children_count) { 19 }
+
+      it 'does the calculation using the correct page size' do
+        expect(collection.last_page(page_size: 19)).to eq(1)
+      end
+    end
+  end
+
+  describe '#paginated_children' do
+    let(:children) { (1..25).map { |n| Collection.new(urn: n.to_s, title: n.to_s) } }
+
+    subject(:collection) { Collection.create(urn: 'urn', title: 'title', children: children) }
+
+    it 'correctly gets the first page' do
+      expect(collection.paginated_children(1).map(&:urn)).to eq(%w[1 2 3 4 5 6 7 8 9 10])
+    end
+
+    it 'correctly gets the second page' do
+      expect(collection.paginated_children(2).map(&:urn)).to eq(%w[11 12 13 14 15 16 17 18 19 20])
+    end
+
+    it 'correctly gets the third page' do
+      expect(collection.paginated_children(3).map(&:urn)).to eq(%w[21 22 23 24 25])
+    end
+  end
 end

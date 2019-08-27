@@ -17,4 +17,14 @@ class Collection < ApplicationRecord
   enum display_type: [:collection, :resource]
 
   canonicalize :language
+
+  def last_page(page_size: 10)
+    (children_count - 1) / page_size + 1
+  end
+
+  def paginated_children(page, page_size: 10)
+    first = (page - 1) * page_size
+
+    children.order(:id).offset(first).limit(page_size)
+  end
 end

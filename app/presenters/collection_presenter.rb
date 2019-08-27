@@ -30,24 +30,40 @@ class CollectionPresenter < ApplicationPresenter
   end
 
   def json
-    json = {
+    {
       '@id': id,
       '@type': type,
       totalItems: total_items,
       title: title,
-    }
+    }.merge(optional_json, context_json, resource_json, dublincore.json)
+  end
 
-    unless nested
-      json[:'@context'] = {
+  def optional_json
+    {}.tap do |json|
+      json[:description] = description if description.present?
+      json[:member] = member if member.present?
+    end
+  end
+
+  def context_json
+    return {} if nested
+
+    {
+      '@context': {
         '@vocab': 'https://www.w3.org/ns/hydra/core#',
         dc: 'http://purl.org/dc/terms/',
         dts: 'https://w3id.org/dts/api#',
-      }
-    end
+      },
+    }
+  end
 
-    json[:description] = description if description.present?
-    json[:member] = member if member.present?
+  def resource_json
+    return {} unless type == 'Resource'
 
-    json.merge(dublincore.json)
+    {
+      'dts:passage': documents_path(id: id),
+      'dts:references': navigation_path(id: id),
+      'dts:download': documents_path(id: id),
+    }
   end
 end

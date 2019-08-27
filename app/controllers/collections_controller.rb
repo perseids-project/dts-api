@@ -1,6 +1,6 @@
 class CollectionsController < ApplicationController
   def dts
-    raise NotFoundException unless presenter
+    raise NotFoundException unless collection
     raise BadRequestException unless presenter.valid?
 
     render json: presenter
@@ -9,13 +9,7 @@ class CollectionsController < ApplicationController
   private
 
   def presenter
-    return @presenter if instance_variable_defined?(:@presenter)
-
-    if collection
-      @presenter = CollectionPresenter.from_collection(collection, nav: nav)
-    else
-      @presenter = nil
-    end
+    @presenter ||= CollectionPresenter.from_collection(collection, nav: nav)
   end
 
   def collection

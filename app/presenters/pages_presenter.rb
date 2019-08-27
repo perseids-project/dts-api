@@ -1,5 +1,5 @@
 class PagesPresenter < ApplicationPresenter
-  def as_json(_options = nil)
+  def json
     {
       '@context': 'dts/EntryPoint.jsonld',
       '@id': root_path,

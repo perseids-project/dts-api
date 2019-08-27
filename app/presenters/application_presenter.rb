@@ -9,4 +9,8 @@ class ApplicationPresenter
   def as_json(options = nil)
     json.as_json(options)
   end
+
+  def to_xml(_options = {})
+    xml
+  end
 end

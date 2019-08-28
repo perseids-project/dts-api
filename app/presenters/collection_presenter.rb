@@ -1,48 +1,86 @@
 class CollectionPresenter < ApplicationPresenter
-  attr_accessor :id, :type, :total_items, :title, :description, :member, :nested, :nav, :dublincore
+  attr_accessor :id, :type, :total, :title, :description, :member_proc, :nested, :nav, :page, :last_page, :dublincore
 
-  def self.from_collection(collection, nav: 'children', nested: false)
+  def self.from_collection(collection, nav: 'children', page: nil, nested: false)
     new(
       id: collection.urn,
       type: collection.display_type.titleize,
       title: collection.title,
       description: collection.description,
-      total_items: collection.children_count,
-      member: nested ? nil : members(collection, nav),
+      total: collection.children_count,
+      member_proc: member_proc(collection, nav, page),
       nested: nested,
       nav: nav,
+      page: page,
+      last_page: last_page(collection, nav, page),
       dublincore: DublinCorePresenter.from_collection(collection),
     )
   end
 
-  def self.members(collection, nav)
-    if nav == 'parents' && collection.parent
-      [from_collection(collection.parent, nested: true)]
-    elsif nav == 'children'
-      collection.children.order(:id).map { |c| from_collection(c, nested: true) }
+  def self.member_proc(collection, nav, page)
+    lambda do
+      if nav == 'parents' && collection.parent
+        [from_collection(collection.parent, nested: true)]
+      elsif page && nav == 'children'
+        collection.paginated_children(page.to_i).map { |c| from_collection(c, nested: true) }
+      elsif nav == 'children'
+        collection.children.order(:id).map { |c| from_collection(c, nested: true) }
+      else
+        []
+      end
     end
   end
 
-  private_class_method :members
+  def self.last_page(collection, nav, page)
+    if !page
+      nil
+    elsif nav == 'parents' && collection.parent
+      1
+    elsif nav == 'children'
+      collection.last_page
+    else
+      0
+    end
+  end
+
+  private_class_method :member_proc, :last_page
 
   def valid?
-    %w[children parents].member?(nav)
+    return false unless %w[children parents].member?(nav)
+    return false if page && !page_valid?
+
+    true
   end
 
   def json
     {
       '@id': id,
       '@type': type,
-      totalItems: total_items,
+      totalItems: total,
       title: title,
-    }.merge(optional_json, context_json, resource_json, dublincore.json)
+    }.merge(optional_json, member_json, context_json, resource_json, view_json, dublincore.json)
+  end
+
+  private
+
+  def page_valid?
+    page =~ /\A\d+\z/ && page_number >= 1 && page_number <= last_page
   end
 
   def optional_json
     {}.tap do |json|
       json[:description] = description if description.present?
-      json[:member] = member if member.present?
     end
+  end
+
+  def member_json
+    return {} if nested
+
+    member = member_proc.call
+
+    return {} if member.empty?
+
+    { member: member }
   end
 
   def context_json
@@ -65,5 +103,15 @@ class CollectionPresenter < ApplicationPresenter
       'dts:references': navigation_path(id: id),
       'dts:download': documents_path(id: id),
     }
+  end
+
+  def view_json
+    return {} unless page
+
+    { view: PartialCollectionPresenter.new(id: id, page_number: page_number, last_page: last_page, nav: nav) }
+  end
+
+  def page_number
+    @page_number ||= page.to_i
   end
 end

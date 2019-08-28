@@ -1,6 +1,6 @@
 class DocumentsController < ApplicationController
   def dts
-    raise BadRequestException if id.blank?
+    raise BadRequestException unless id
     raise NotFoundException unless document
 
     render xml: presenter
@@ -21,6 +21,6 @@ class DocumentsController < ApplicationController
   end
 
   def id
-    params[:id]
+    params[:id].presence
   end
 end

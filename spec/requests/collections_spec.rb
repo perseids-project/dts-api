@@ -254,7 +254,7 @@ RSpec.describe '/collections', type: :request do
     )
   end
 
-  it 'does not accept malformed queries' do
+  it 'does not accept a malformed nav' do
     get '/collections/?nav=badinput'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')

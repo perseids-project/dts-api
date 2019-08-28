@@ -9,11 +9,15 @@ class CollectionsController < ApplicationController
   private
 
   def presenter
-    @presenter ||= CollectionPresenter.from_collection(collection, nav: nav)
+    @presenter ||= CollectionPresenter.from_collection(collection, nav: nav, page: page)
   end
 
   def collection
     @collection ||= Collection.find_by(urn: id)
+  end
+
+  def page
+    params[:page].presence
   end
 
   def id

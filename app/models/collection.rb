@@ -14,6 +14,9 @@ class Collection < ApplicationRecord
   validates :title, presence: true
   validates :language, language: true
 
+  validates :document, absence: true, if: :collection?
+  validates :document, presence: true, if: :resource?
+
   enum display_type: [:collection, :resource]
 
   canonicalize :language

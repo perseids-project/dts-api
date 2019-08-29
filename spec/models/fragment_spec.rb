@@ -17,7 +17,7 @@ RSpec.describe Fragment, type: :model do
   it { should beautify_xml_of(:xml) }
 
   describe 'uniqueness validations' do
-    let(:collection) { Collection.new(urn: 'urn', title: 'title') }
+    let(:collection) { Collection.new(urn: 'urn', title: 'title', display_type: 'resource') }
     let(:document) do
       Document.new(urn: 'urn', xml: '<test><div/></test>', collection: collection)
     end

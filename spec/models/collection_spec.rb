@@ -24,6 +24,20 @@ RSpec.describe Collection, type: :model do
     it { should validate_uniqueness_of(:urn) }
   end
 
+  describe 'display type conditional presence validations' do
+    let(:display_type) { 'collection' }
+
+    subject { Collection.new(display_type: display_type) }
+
+    it { should validate_absence_of(:document) }
+
+    context 'it is a resource' do
+      let(:display_type) { 'resource' }
+
+      it { should validate_presence_of(:document) }
+    end
+  end
+
   describe 'default values' do
     its(:display_type) { should eq('collection') }
   end

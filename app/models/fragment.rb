@@ -1,6 +1,4 @@
 class Fragment < ApplicationRecord
-  include BeautifyXml
-
   belongs_to :document
   belongs_to :parent, class_name: 'Fragment', optional: true
 
@@ -10,6 +8,4 @@ class Fragment < ApplicationRecord
   validates :xml, presence: true
   validates :level, presence: true, numericality: { only_integer: true }
   validates :rank, presence: true, numericality: { only_integer: true }, uniqueness: { scope: [:document_id, :ref] }
-
-  beautify :xml
 end

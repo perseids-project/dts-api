@@ -35,6 +35,7 @@ class Parser
       return nil unless File.exist?(filepath)
 
       file = File.read(filepath)
+      xml = Nokogiri::XML(file, &:huge)
 
       Collection.new(
         urn: urn,
@@ -42,7 +43,7 @@ class Parser
         title: parent.title,
         language: get_language_from_edition(edition),
         document: Document.new(urn: urn, xml: file),
-        cite_structure: CiteStructureParser.cite_structure(file),
+        cite_structure: CiteStructureParser.cite_structure(xml),
       ).tap { |collection| build_collection_fields(collection, edition) }
     end
 

@@ -14,8 +14,6 @@ RSpec.describe Fragment, type: :model do
   it { should validate_numericality_of(:level).only_integer }
   it { should validate_numericality_of(:rank).only_integer }
 
-  it { should beautify_xml_of(:xml) }
-
   describe 'uniqueness validations' do
     let(:collection) { Collection.new(urn: 'urn', title: 'title', display_type: 'resource', cite_structure: ['book']) }
     let(:document) do

@@ -14,10 +14,8 @@ class Collection < ApplicationRecord
   validates :language, language: true
 
   validates :document, absence: true, if: :collection?
-  validates :cite_structure, absence: true, if: :collection?
 
   validates :document, presence: true, if: :resource?
-  validates :cite_structure, presence: true, if: :resource?
 
   enum display_type: [:collection, :resource]
 

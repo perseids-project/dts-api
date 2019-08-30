@@ -47,7 +47,7 @@ schematypens="http://purl.oclc.org/dsdl/schematron"?><TEI xmlns="http://www.tei-
 
 		<encodingDesc>
 			<refsDecl n="CTS">
-				<cRefPattern n="line"
+				<cRefPattern
 					matchPattern="(\w+).(\w+).(\w+)"
 					replacementPattern="#xpath(/tei:TEI/tei:text/tei:body/tei:div[@type='translation']/tei:div[@n='$1']/tei:div[@n='$2']//tei:l[@n='$3'])">
 					<p>This pointer pattern extracts book and poem and line</p>

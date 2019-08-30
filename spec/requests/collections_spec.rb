@@ -27,7 +27,18 @@ RSpec.describe '/collections', type: :request do
       document: Document.new(urn: 'urn', xml: '<test/>'),
     )
   end
-
+  let!(:peloponnesian_war) do
+    Collection.create!(
+      urn: 'peloponnesian-war',
+      title: 'History of the Peloponnesian War',
+      description: 'History of the Peloponnesian War by Thucydides',
+      display_type: 'resource',
+      parent: nonfiction,
+      language: 'grc',
+      cite_structure: [],
+      document: Document.new(urn: 'urn', xml: '<test/>'),
+    )
+  end
   let!(:news_title_en) { CollectionTitle.create(title: 'news magazines', language: 'en', collection: news) }
   let!(:news_title_fr) { CollectionTitle.create(title: "magazines d'information", language: 'fr', collection: news) }
   let!(:news_description_en) do
@@ -74,7 +85,7 @@ RSpec.describe '/collections', type: :request do
       '@type' => 'Collection',
       'member' => [
         { '@id' => 'fiction', '@type' => 'Collection', 'title' => 'fiction books', 'totalItems' => 0 },
-        { '@id' => 'nonfiction', '@type' => 'Collection', 'title' => 'nonfiction books', 'totalItems' => 1 },
+        { '@id' => 'nonfiction', '@type' => 'Collection', 'title' => 'nonfiction books', 'totalItems' => 2 },
       ],
       'title' => 'collection of books',
       'totalItems' => 2,
@@ -262,6 +273,30 @@ RSpec.describe '/collections', type: :request do
       'dts:passage' => '/documents?id=histories',
       'dts:references' => '/navigation?id=histories',
       'title' => 'The Histories',
+      'totalItems' => 0,
+    )
+  end
+
+  it 'skips cite structure when there is none' do
+    get '/collections/?id=peloponnesian-war'
+
+    expect(response.content_type).to eq('application/ld+json; charset=utf-8')
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)).to match(
+      '@context' => {
+        '@vocab' => 'https://www.w3.org/ns/hydra/core#',
+        'dc' => 'http://purl.org/dc/terms/',
+        'dts' => 'https://w3id.org/dts/api#',
+      },
+      '@id' => 'peloponnesian-war',
+      '@type' => 'Resource',
+      'description' => 'History of the Peloponnesian War by Thucydides',
+      'dts:citeDepth' => 0,
+      'dts:download' => '/documents?id=peloponnesian-war',
+      'dts:dublincore' => { 'dc:language' => 'grc' },
+      'dts:passage' => '/documents?id=peloponnesian-war',
+      'dts:references' => '/navigation?id=peloponnesian-war',
+      'title' => 'History of the Peloponnesian War',
       'totalItems' => 0,
     )
   end

@@ -29,13 +29,11 @@ RSpec.describe Collection, type: :model do
     subject { Collection.new(display_type: display_type) }
 
     it { should validate_absence_of(:document) }
-    # it { should validate_absence_of(:cite_structure) } TODO https://github.com/thoughtbot/shoulda-matchers/issues/1240
 
     context 'it is a resource' do
       let(:display_type) { 'resource' }
 
       it { should validate_presence_of(:document) }
-      it { should validate_presence_of(:cite_structure) }
     end
   end
 

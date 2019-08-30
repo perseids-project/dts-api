@@ -160,7 +160,7 @@ RSpec.describe Parser do
           language: 'en',
           description: 'Amores, Ovid',
           children_count: 0,
-          cite_structure: %w[book poem line],
+          cite_structure: %w[book poem section],
         ),
       ])
     end

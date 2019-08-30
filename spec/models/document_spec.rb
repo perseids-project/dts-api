@@ -8,8 +8,6 @@ RSpec.describe Document, type: :model do
   it { should validate_presence_of(:urn) }
   it { should validate_presence_of(:xml) }
 
-  it { should beautify_xml_of(:xml) }
-
   describe 'uniqueness validations' do
     let(:collection) { Collection.new(urn: 'urn', title: 'title', display_type: 'resource', cite_structure: ['book']) }
 

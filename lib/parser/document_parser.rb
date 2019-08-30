@@ -1,4 +1,5 @@
 require 'parser/parser_utils'
+require 'parser/cite_structure_parser'
 
 class Parser
   class DocumentParser
@@ -29,22 +30,24 @@ class Parser
 
     def resource_from_edition(edition, directory)
       urn = edition['urn']
-      language = edition['xml:lang'].presence || parent.language
       filepath = path(directory, "#{urn.gsub(/\A.*:/, '')}.xml")
 
       return nil unless File.exist?(filepath)
 
-      resource = Collection.new(
+      file = File.read(filepath)
+
+      Collection.new(
         urn: urn,
         display_type: 'resource',
         title: parent.title,
-        language: language,
-        document: Document.new(urn: urn, xml: File.read(filepath)),
-      )
+        language: get_language_from_edition(edition),
+        document: Document.new(urn: urn, xml: file),
+        cite_structure: CiteStructureParser.cite_structure(file),
+      ).tap { |collection| build_collection_fields(collection, edition) }
+    end
 
-      build_collection_fields(resource, edition)
-
-      resource
+    def get_language_from_edition(edition)
+      edition['xml:lang'].presence || parent.language
     end
 
     def build_collection_fields(collection, edition)

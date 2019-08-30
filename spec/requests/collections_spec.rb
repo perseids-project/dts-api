@@ -16,13 +16,15 @@ RSpec.describe '/collections', type: :request do
     )
   end
   let!(:histories) do
-    Collection.create(
+    Collection.create!(
       urn: 'histories',
       title: 'The Histories',
       description: 'The Histories by Herodotus of Halicarnassus',
       display_type: 'resource',
       parent: nonfiction,
       language: 'grc',
+      cite_structure: %w[book chapter section],
+      document: Document.new(urn: 'urn', xml: '<test/>'),
     )
   end
 
@@ -245,6 +247,16 @@ RSpec.describe '/collections', type: :request do
       '@id' => 'histories',
       '@type' => 'Resource',
       'description' => 'The Histories by Herodotus of Halicarnassus',
+      'dts:citeDepth' => 3,
+      'dts:citeStructure' => [{
+        'dts:citeStructure' => [{
+          'dts:citeType' => 'chapter',
+          'dts:citeStructure' => [{
+            'dts:citeType' => 'section',
+          }],
+        }],
+        'dts:citeType' => 'book',
+      }],
       'dts:download' => '/documents?id=histories',
       'dts:dublincore' => { 'dc:language' => 'grc' },
       'dts:passage' => '/documents?id=histories',

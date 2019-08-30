@@ -1,19 +1,22 @@
 class CollectionPresenter < ApplicationPresenter
-  attr_accessor :id, :type, :total, :title, :description, :member_proc, :nested, :nav, :page, :last_page, :dublincore
+  attr_accessor :cite_depth, :cite_structure, :description, :dublincore, :id, :last_page, :member_proc,
+    :nav, :nested, :page, :title, :total, :type
 
   def self.from_collection(collection, nav: 'children', page: nil, nested: false)
     new(
-      id: collection.urn,
-      type: collection.display_type.titleize,
-      title: collection.title,
+      cite_depth: collection.cite_depth,
+      cite_structure: CiteStructurePresenter.from_collection(collection),
       description: collection.description,
-      total: collection.children_count,
-      member_proc: member_proc(collection, nav, page),
-      nested: nested,
-      nav: nav,
-      page: page,
-      last_page: last_page(collection, nav, page),
       dublincore: DublinCorePresenter.from_collection(collection),
+      id: collection.urn,
+      last_page: last_page(collection, nav, page),
+      member_proc: member_proc(collection, nav, page),
+      nav: nav,
+      nested: nested,
+      page: page,
+      title: collection.title,
+      total: collection.children_count,
+      type: collection.display_type.titleize,
     )
   end
 
@@ -102,7 +105,8 @@ class CollectionPresenter < ApplicationPresenter
       'dts:passage': documents_path(id: id),
       'dts:references': navigation_path(id: id),
       'dts:download': documents_path(id: id),
-    }
+      'dts:citeDepth': cite_depth,
+    }.merge!(cite_structure.json)
   end
 
   def view_json

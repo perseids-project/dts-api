@@ -16,18 +16,6 @@ ActiveRecord::Schema.define(version: 2019_08_16_174624) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_table "citation_types", force: :cascade do |t|
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.bigint "collection_id", null: false
-    t.integer "level", null: false
-    t.string "citation_type", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["collection_id", "level"], name: "index_citation_types_on_collection_id_and_level", unique: true
-    t.index ["collection_id"], name: "index_citation_types_on_collection_id"
-    t.index ["uuid"], name: "index_citation_types_on_uuid", unique: true
-  end
-
   create_table "collection_descriptions", force: :cascade do |t|
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "collection_id", null: false
@@ -59,6 +47,7 @@ ActiveRecord::Schema.define(version: 2019_08_16_174624) do
     t.string "language"
     t.integer "display_type", default: 0, null: false
     t.integer "children_count", default: 0, null: false
+    t.string "cite_structure", array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["parent_id"], name: "index_collections_on_parent_id"
@@ -95,7 +84,6 @@ ActiveRecord::Schema.define(version: 2019_08_16_174624) do
     t.index ["uuid"], name: "index_fragments_on_uuid", unique: true
   end
 
-  add_foreign_key "citation_types", "collections"
   add_foreign_key "collection_descriptions", "collections"
   add_foreign_key "collection_titles", "collections"
   add_foreign_key "collections", "collections", column: "parent_id"

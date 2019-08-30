@@ -151,6 +151,7 @@ RSpec.describe Parser do
           description: 'Amores, The Art of Love in Three Books The remedy of love. ' \
                        'The art of beauty. The court of love. The history of love amours.',
           children_count: 0,
+          cite_structure: %w[book poem line],
         ),
         an_object_having_attributes(
           urn: 'urn:cts:latinLit:phi0959.phi001.perseus-eng2',
@@ -159,6 +160,7 @@ RSpec.describe Parser do
           language: 'en',
           description: 'Amores, Ovid',
           children_count: 0,
+          cite_structure: %w[book poem line],
         ),
       ])
     end

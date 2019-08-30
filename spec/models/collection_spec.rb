@@ -4,7 +4,6 @@ RSpec.describe Collection, type: :model do
   it { should belong_to(:parent).class_name('Collection').optional }
 
   it { should have_many(:children).class_name('Collection') }
-  it { should have_many(:citation_types) }
   it { should have_many(:collection_descriptions) }
   it { should have_many(:collection_titles) }
 
@@ -30,11 +29,13 @@ RSpec.describe Collection, type: :model do
     subject { Collection.new(display_type: display_type) }
 
     it { should validate_absence_of(:document) }
+    # it { should validate_absence_of(:cite_structure) } TODO https://github.com/thoughtbot/shoulda-matchers/issues/1240
 
     context 'it is a resource' do
       let(:display_type) { 'resource' }
 
       it { should validate_presence_of(:document) }
+      it { should validate_presence_of(:cite_structure) }
     end
   end
 
@@ -54,6 +55,12 @@ RSpec.describe Collection, type: :model do
 
       its(:children_count) { should eq(1) }
     end
+  end
+
+  describe '#cite_depth' do
+    subject { Collection.new(cite_structure: %w[a b c]) }
+
+    its(:cite_depth) { should eq(3) }
   end
 
   describe '#last_page' do

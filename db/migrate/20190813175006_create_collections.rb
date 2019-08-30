@@ -11,6 +11,7 @@ class CreateCollections < ActiveRecord::Migration[6.0]
       t.string :language
       t.integer :display_type, null: false, default: 0
       t.integer :children_count, null: false, default: 0
+      t.string :cite_structure, array: true
 
       t.timestamps null: false
     end

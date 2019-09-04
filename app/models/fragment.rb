@@ -7,5 +7,8 @@ class Fragment < ApplicationRecord
   validates :ref, presence: true, uniqueness: { scope: :document_id }
   validates :xml, presence: true
   validates :level, presence: true, numericality: { only_integer: true }
-  validates :rank, presence: true, numericality: { only_integer: true }, uniqueness: { scope: [:document_id, :ref] }
+  validates :rank,
+    presence: true,
+    numericality: { only_integer: true },
+    uniqueness: { scope: [:document_id, :parent_id, :ref] }
 end

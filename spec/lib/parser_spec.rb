@@ -41,6 +41,10 @@ RSpec.describe Parser do
       expect(Document.count).to eq(2)
     end
 
+    it 'creates all fragments' do
+      expect(Fragment.count).to eq(35)
+    end
+
     it 'creates the root collection' do
       root = Collection.find_by(urn: 'default')
 
@@ -182,6 +186,90 @@ RSpec.describe Parser do
           xml: a_string_including('<l n="1">For mighty wars I thought to tune my lute,</l>'),
         ),
       )
+    end
+
+    it 'creates the fragments for documents' do
+      document = Document.find_by(urn: 'urn:cts:latinLit:phi0959.phi001.perseus-lat2')
+
+      expect(document.fragments.order(:id)).to match([
+        an_object_having_attributes(ref: '1', level: 1, rank: 0),
+        an_object_having_attributes(ref: '1.ep', level: 2, rank: 0),
+        an_object_having_attributes(ref: '1.ep.1', level: 3, rank: 0),
+        an_object_having_attributes(ref: '1.ep.2', level: 3, rank: 1),
+        an_object_having_attributes(ref: '1.ep.3', level: 3, rank: 2),
+        an_object_having_attributes(ref: '1.1', level: 2, rank: 1),
+        an_object_having_attributes(ref: '1.1.1', level: 3, rank: 0),
+        an_object_having_attributes(ref: '1.1.2', level: 3, rank: 1),
+        an_object_having_attributes(ref: '1.1.3', level: 3, rank: 2),
+        an_object_having_attributes(ref: '1.2', level: 2, rank: 2),
+        an_object_having_attributes(ref: '1.2.1', level: 3, rank: 0),
+        an_object_having_attributes(ref: '1.2.2', level: 3, rank: 1),
+        an_object_having_attributes(ref: '1.2.3', level: 3, rank: 2),
+        an_object_having_attributes(ref: '2', level: 1, rank: 1),
+        an_object_having_attributes(ref: '2.1', level: 2, rank: 0),
+        an_object_having_attributes(ref: '2.1.1', level: 3, rank: 0),
+        an_object_having_attributes(ref: '2.1.2', level: 3, rank: 1),
+        an_object_having_attributes(ref: '2.1.3', level: 3, rank: 2),
+      ])
+    end
+
+    it 'generates the correct parent child relationships for the fragments' do
+      document = Document.find_by(urn: 'urn:cts:latinLit:phi0959.phi001.perseus-lat2')
+
+      fragment2 = Fragment.find_by(document: document, ref: '2')
+      fragment21 = Fragment.find_by(document: document, ref: '2.1')
+      fragment213 = Fragment.find_by(document: document, ref: '2.1.3')
+
+      expect(fragment2.parent).to be_nil
+      expect(fragment21.parent).to eq(fragment2)
+      expect(fragment213.parent).to eq(fragment21)
+      expect(fragment213.children).to be_empty
+    end
+
+    it 'generates the correct xml for the fragments' do
+      document = Document.find_by(urn: 'urn:cts:latinLit:phi0959.phi001.perseus-lat2')
+
+      fragment2 = Fragment.find_by(document: document, ref: '2')
+      fragment21 = Fragment.find_by(document: document, ref: '2.1')
+      fragment213 = Fragment.find_by(document: document, ref: '2.1.3')
+
+      expect(fragment2.xml).to be_equivalent_to(%(
+        <?xml version="1.0" encoding="UTF-8"?>
+        <TEI xmlns="http://www.tei-c.org/ns/1.0">
+          <dts:fragment xmlns:dts="https://w3id.org/dts/api#">
+            <div type="textpart" subtype="book" n="2">
+              <head>Liber secundus</head>
+              <div type="textpart" subtype="poem" n="1">
+                <l n="1">Hoc quoque conposui Paelignis natus aquosis,</l>
+                <l n="2" rend="indent">Ille ego nequitiae Naso poeta meae.</l>
+                <l n="3">Hoc quoque iussit Amor — procul hinc, procul este, severae!</l>
+              </div>
+            </div>
+          </dts:fragment>
+        </TEI>
+      ))
+
+      expect(fragment21.xml).to be_equivalent_to(%(
+        <?xml version="1.0" encoding="UTF-8"?>
+        <TEI xmlns="http://www.tei-c.org/ns/1.0">
+          <dts:fragment xmlns:dts="https://w3id.org/dts/api#">
+            <div type="textpart" subtype="poem" n="1">
+              <l n="1">Hoc quoque conposui Paelignis natus aquosis,</l>
+              <l n="2" rend="indent">Ille ego nequitiae Naso poeta meae.</l>
+              <l n="3">Hoc quoque iussit Amor — procul hinc, procul este, severae!</l>
+            </div>
+          </dts:fragment>
+        </TEI>
+      ))
+
+      expect(fragment213.xml).to be_equivalent_to(%(
+        <?xml version="1.0" encoding="UTF-8"?>
+        <TEI xmlns="http://www.tei-c.org/ns/1.0">
+          <dts:fragment xmlns:dts="https://w3id.org/dts/api#">
+            <l n="3">Hoc quoque iussit Amor — procul hinc, procul este, severae!</l>
+          </dts:fragment>
+        </TEI>
+      ))
     end
 
     it 'creates the collection titles for resources' do

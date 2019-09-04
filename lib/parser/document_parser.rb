@@ -1,9 +1,14 @@
 require 'parser/parser_utils'
 require 'parser/cite_structure_parser'
+require 'parser/fragment_parser'
 
 class Parser
   class DocumentParser
     include ParserUtils
+
+    def self.build(file, parent, work)
+      new(file, parent, work).build
+    end
 
     def initialize(file, parent, work)
       @file = file
@@ -30,21 +35,27 @@ class Parser
 
     def resource_from_edition(edition, directory)
       urn = edition['urn']
-      filepath = path(directory, "#{urn.gsub(/\A.*:/, '')}.xml")
+      filepath = get_filepath_from_urn(urn, directory)
 
       return nil unless File.exist?(filepath)
 
       file = File.read(filepath)
       xml = Nokogiri::XML(file, &:huge)
+      document = Document.new(urn: urn, xml: file)
+      FragmentParser.build(document, xml)
 
       Collection.new(
         urn: urn,
         display_type: 'resource',
         title: parent.title,
         language: get_language_from_edition(edition),
-        document: Document.new(urn: urn, xml: file),
+        document: document,
         cite_structure: CiteStructureParser.cite_structure(xml),
       ).tap { |collection| build_collection_fields(collection, edition) }
+    end
+
+    def get_filepath_from_urn(urn, directory)
+      path(directory, "#{urn.gsub(/\A.*:/, '')}.xml")
     end
 
     def get_language_from_edition(edition)

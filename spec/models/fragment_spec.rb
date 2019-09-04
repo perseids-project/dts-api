@@ -23,6 +23,6 @@ RSpec.describe Fragment, type: :model do
     subject(:fragment) { Fragment.new(ref: 'ref', xml: '<div/>', level: 1, rank: 1, document: document) }
 
     it { should validate_uniqueness_of(:ref).scoped_to(:document_id) }
-    it { should validate_uniqueness_of(:rank).scoped_to([:document_id, :ref]) }
+    it { should validate_uniqueness_of(:rank).scoped_to([:document_id, :parent_id, :ref]) }
   end
 end

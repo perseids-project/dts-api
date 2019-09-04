@@ -77,7 +77,7 @@ ActiveRecord::Schema.define(version: 2019_08_16_174624) do
     t.integer "rank", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["document_id", "level", "rank"], name: "index_fragments_on_document_id_and_level_and_rank", unique: true
+    t.index ["document_id", "parent_id", "level", "rank"], name: "index_fragments_on_document_id_and_parent_id_and_level_and_rank", unique: true
     t.index ["document_id", "ref"], name: "index_fragments_on_document_id_and_ref", unique: true
     t.index ["document_id"], name: "index_fragments_on_document_id"
     t.index ["parent_id"], name: "index_fragments_on_parent_id"

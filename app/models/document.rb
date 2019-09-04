@@ -5,4 +5,6 @@ class Document < ApplicationRecord
 
   validates :urn, presence: true, uniqueness: true
   validates :xml, presence: true
+
+  delegate :cite_depth, to: :collection
 end

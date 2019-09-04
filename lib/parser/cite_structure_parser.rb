@@ -8,6 +8,8 @@ class CiteStructureParser
   end
 
   def cite_structure
+    return [] if xml.errors.present?
+
     ref_pattern.each_with_index.map { |n, i| n.presence || unknown(i) }
   end
 

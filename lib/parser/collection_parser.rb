@@ -62,7 +62,7 @@ class Parser
 
       titles = collect_tags(work, 'title')
       build_collection_titles(collection, titles)
-      DocumentParser.new(file, collection, work).build
+      DocumentParser.build(file, collection, work)
 
       collection.tap(&:save!)
     end

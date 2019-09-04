@@ -13,3 +13,6 @@ Metrics/MethodLength:
   Max: 15
   ExcludedMethods:
     - json
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false

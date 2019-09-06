@@ -1,8 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe '/documents', type: :request do
-  let(:collection) { Collection.new(urn: 'urn', title: 'title', display_type: 'resource', cite_structure: ['book']) }
-
+  let!(:collection) { Collection.new(urn: 'urn', title: 'title', display_type: 'resource', cite_structure: ['book']) }
   let!(:document) { Document.create(urn: 'urn', xml: '<test/>', collection: collection) }
 
   it 'displays the document xml' do

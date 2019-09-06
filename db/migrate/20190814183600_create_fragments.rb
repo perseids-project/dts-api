@@ -16,6 +16,6 @@ class CreateFragments < ActiveRecord::Migration[6.0]
 
     add_index :fragments, :uuid, unique: true
     add_index :fragments, [:document_id, :ref], unique: true
-    add_index :fragments, [:document_id, :parent_id, :level, :rank], unique: true
+    add_index :fragments, [:document_id, :rank], unique: true
   end
 end

@@ -16,7 +16,7 @@ RSpec.describe '/collections', type: :request do
     )
   end
   let!(:histories) do
-    Collection.create!(
+    Collection.create(
       urn: 'histories',
       title: 'The Histories',
       description: 'The Histories by Herodotus of Halicarnassus',
@@ -28,7 +28,7 @@ RSpec.describe '/collections', type: :request do
     )
   end
   let!(:peloponnesian_war) do
-    Collection.create!(
+    Collection.create(
       urn: 'peloponnesian-war',
       title: 'History of the Peloponnesian War',
       description: 'History of the Peloponnesian War by Thucydides',

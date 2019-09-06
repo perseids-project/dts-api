@@ -1,9 +1,9 @@
 class PartialCollectionPresenter < ApplicationPresenter
-  attr_accessor :id, :page_number, :last_page, :nav
+  attr_accessor :id, :page, :last_page, :nav
 
   def json
     {
-      '@id': path(page_number),
+      '@id': path(page),
       '@type': 'PartialCollectionView',
       first: path(1),
       last: path(last_page),
@@ -14,12 +14,12 @@ class PartialCollectionPresenter < ApplicationPresenter
 
   def previous_next_links_json
     {}.tap do |json|
-      if page_number > 1
-        json[:previous] = path(page_number - 1)
+      if page > 1
+        json[:previous] = path(page - 1)
       end
 
-      if page_number < last_page
-        json[:next] = path(page_number + 1)
+      if page < last_page
+        json[:next] = path(page + 1)
       end
     end
   end

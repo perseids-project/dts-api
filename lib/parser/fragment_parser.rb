@@ -6,6 +6,7 @@ class FragmentParser
   def initialize(document, xml)
     @document = document
     @xml = xml
+    @rank = -1
   end
 
   def build
@@ -36,23 +37,28 @@ class FragmentParser
 
     replacement_pattern, *other_patterns = replacement_patterns
 
-    xml.xpath(
-      gsub_hash(replacement_pattern, gsubs),
-      tei: 'http://www.tei-c.org/ns/1.0',
-    ).each_with_index.map do |xml_fragment, rank|
+    xml_fragments(replacement_pattern, gsubs).each_with_index.map do |xml_fragment|
       line = xml_fragment['n']
       new_gsubs = next_level_gsubs(gsubs, level, line)
       new_ref = [ref, line].compact.join('.')
 
-      build_fragment(xml_fragment, new_ref, level, rank, build_fragments(level + 1, new_ref, new_gsubs, other_patterns))
+      update_rank!
+      build_fragment(xml_fragment, rank, new_ref, level, build_fragments(level + 1, new_ref, new_gsubs, other_patterns))
     end
+  end
+
+  def xml_fragments(replacement_pattern, gsubs)
+    xml.xpath(
+      gsub_hash(replacement_pattern, gsubs),
+      tei: 'http://www.tei-c.org/ns/1.0',
+    )
   end
 
   def next_level_gsubs(gsubs, level, line)
     gsubs.merge("='$#{level}'" => "='#{line}'", "='$#{level + 1}'" => '')
   end
 
-  def build_fragment(xml_fragment, ref, level, rank, children)
+  def build_fragment(xml_fragment, rank, ref, level, children)
     Fragment.new(
       document: document,
       xml: wrap(xml_fragment),
@@ -91,5 +97,9 @@ class FragmentParser
     pattern['replacementPattern'].sub(/\A#xpath\(/, '').sub(/\)\z/, '').gsub("\\'", "'")
   end
 
-  attr_reader :document, :xml
+  def update_rank!
+    @rank += 1
+  end
+
+  attr_reader :document, :xml, :rank
 end

@@ -25,7 +25,7 @@ class CollectionPresenter < ApplicationPresenter
       if nav == 'parents' && collection.parent
         [from_collection(collection.parent, nested: true)]
       elsif page && nav == 'children'
-        collection.paginated_children(page.to_i).map { |c| from_collection(c, nested: true) }
+        collection.paginated_children(page).map { |c| from_collection(c, nested: true) }
       elsif nav == 'children'
         collection.children.order(:id).map { |c| from_collection(c, nested: true) }
       else
@@ -67,7 +67,7 @@ class CollectionPresenter < ApplicationPresenter
   private
 
   def page_valid?
-    page =~ /\A\d+\z/ && page_number >= 1 && page_number <= last_page
+    page >= 1 && page <= last_page
   end
 
   def optional_json
@@ -112,10 +112,6 @@ class CollectionPresenter < ApplicationPresenter
   def view_json
     return {} unless page
 
-    { view: PartialCollectionPresenter.new(id: id, page_number: page_number, last_page: last_page, nav: nav) }
-  end
-
-  def page_number
-    @page_number ||= page.to_i
+    { view: PartialCollectionPresenter.new(id: id, page: page, last_page: last_page, nav: nav) }
   end
 end

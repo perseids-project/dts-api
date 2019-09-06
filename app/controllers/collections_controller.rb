@@ -17,7 +17,7 @@ class CollectionsController < ApplicationController
   end
 
   def page
-    params[:page].presence
+    params[:page].presence&.to_i
   end
 
   def id

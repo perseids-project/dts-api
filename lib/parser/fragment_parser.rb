@@ -58,13 +58,14 @@ class FragmentParser
     gsubs.merge("='$#{level}'" => "='#{line}'", "='$#{level + 1}'" => '')
   end
 
-  def build_fragment(xml_fragment, rank, ref, level, children)
+  def build_fragment(xml_fragment, fragment_rank, ref, level, children)
     Fragment.new(
       document: document,
       xml: wrap(xml_fragment),
       ref: ref,
       level: level,
-      rank: rank,
+      rank: fragment_rank,
+      descendent_rank: rank,
       children: children,
     )
   end

@@ -10,6 +10,7 @@ class CreateFragments < ActiveRecord::Migration[6.0]
       t.text :xml, null: false
       t.integer :level, null: false
       t.integer :rank, null: false
+      t.integer :descendent_rank, null: false
 
       t.timestamps null: false
     end

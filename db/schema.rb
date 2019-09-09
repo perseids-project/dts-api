@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(version: 2019_08_16_174624) do
     t.text "xml", null: false
     t.integer "level", null: false
     t.integer "rank", null: false
+    t.integer "descendent_rank", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["document_id", "rank"], name: "index_fragments_on_document_id_and_rank", unique: true

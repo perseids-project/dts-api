@@ -1,8 +1,12 @@
 class DocumentsController < ApplicationController
-  def dts
-    raise BadRequestException unless id
-    raise NotFoundException unless document
+  include ProcessFragments
 
+  def dts
+    raise NotFoundException unless document
+    raise NotFoundException if fragment_not_found?
+    raise BadRequestException unless presenter.valid?
+
+    headers['Link'] = presenter.link_header
     render xml: presenter
   end
 
@@ -13,14 +17,26 @@ class DocumentsController < ApplicationController
   end
 
   def presenter
-    @presenter ||= DocumentPresenter.from_document(document)
+    return @presenter if @presenter
+
+    if ref
+      @presenter = fragment_presenter
+    elsif start || stop
+      @presenter = start_stop_presenter
+    else
+      @presenter = document_presenter
+    end
   end
 
-  def document
-    @document ||= Document.find_by(urn: id)
+  def fragment_presenter
+    DocumentPresenter.from_fragment(fragment, start: start, stop: stop)
   end
 
-  def id
-    params[:id].presence
+  def start_stop_presenter
+    DocumentPresenter.from_start_and_stop(start_fragment, stop_fragment)
+  end
+
+  def document_presenter
+    DocumentPresenter.from_document(document)
   end
 end

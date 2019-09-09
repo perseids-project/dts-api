@@ -2,6 +2,10 @@ class ApplicationPresenter
   include ActiveModel::Model
   include Rails.application.routes.url_helpers
 
+  class << self
+    include Rails.application.routes.url_helpers
+  end
+
   def valid?
     true
   end

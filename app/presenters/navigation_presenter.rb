@@ -13,8 +13,9 @@ class NavigationPresenter < ApplicationPresenter
     )
   end
 
-  def self.from_start_and_stop(document, start_fragment, stop_fragment, level:, group_by:)
+  def self.from_start_and_stop(start_fragment, stop_fragment, level:, group_by:)
     level ||= start_fragment.level
+    document = start_fragment.document
 
     new(
       id: document.urn,
@@ -23,7 +24,7 @@ class NavigationPresenter < ApplicationPresenter
       start: start_fragment&.ref,
       stop: stop_fragment&.ref,
       group_by: group_by,
-      member_proc: document_member_start_end_proc(document, level, start_fragment, stop_fragment),
+      member_proc: document_member_start_end_proc(level, start_fragment, stop_fragment),
     )
   end
 
@@ -46,18 +47,17 @@ class NavigationPresenter < ApplicationPresenter
     -> { document.fragments.where(level: level).order(:rank) }
   end
 
-  def self.document_member_start_end_proc(document, level, start_fragment, stop_fragment)
+  def self.document_member_start_end_proc(level, start_fragment, stop_fragment)
     lambda do
-      start_rank = start_fragment.descendents(level).first.rank
-      stop_rank = stop_fragment.descendents(level).last.rank
-      rank_range = (start_rank..stop_rank)
+      start_rank = start_fragment.rank
+      stop_rank = stop_fragment.descendent_rank
 
-      document.fragments.where(rank: rank_range, level: level).order(:rank)
+      start_fragment.document.fragments.where(rank: (start_rank..stop_rank), level: level).order(:rank)
     end
   end
 
   def self.fragment_member_proc(fragment, level)
-    -> { fragment.descendents(level).order(:rank) }
+    -> { fragment.document.fragments.where(rank: (fragment.rank..fragment.descendent_rank), level: level).order(:rank) }
   end
 
   private_class_method :document_member_proc, :document_member_start_end_proc, :fragment_member_proc

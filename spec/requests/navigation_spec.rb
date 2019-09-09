@@ -6,32 +6,64 @@ RSpec.describe '/navigation', type: :request do
   end
   let!(:document) { Document.create(urn: 'urn', xml: '<test/>', collection: collection) }
 
-  let!(:book1) { Fragment.create(document: document, ref: '1', level: 1, rank: 0, xml: '<book n="1"/>') }
+  let!(:book1) { Fragment.create(document: document, ref: '1', level: 1, rank: 0, descendent_rank: 6, xml: '<b/>') }
   let!(:chapter11) do
-    Fragment.create(document: document, ref: '1.1', level: 2, rank: 1, parent: book1, xml: '<chapter n="1"/>')
+    Fragment.create(document: document, ref: '1.1', level: 2, rank: 1, descendent_rank: 4, parent: book1, xml: '<c/>')
   end
   let!(:line111) do
-    Fragment.create(document: document, ref: '1.1.1', level: 3, rank: 2, parent: chapter11, xml: '<line n="1"/>')
+    Fragment.create(
+      document: document,
+      ref: '1.1.1',
+      level: 3,
+      rank: 2,
+      descendent_rank: 2,
+      parent: chapter11,
+      xml: '<l/>',
+    )
   end
   let!(:line112) do
-    Fragment.create(document: document, ref: '1.1.2', level: 3, rank: 3, parent: chapter11, xml: '<line n="2"/>')
+    Fragment.create(
+      document: document,
+      ref: '1.1.2',
+      level: 3,
+      rank: 3,
+      descendent_rank: 3,
+      parent: chapter11,
+      xml: '<l/>',
+    )
   end
   let!(:line113) do
-    Fragment.create(document: document, ref: '1.1.3', level: 3, rank: 4, parent: chapter11, xml: '<line n="3"/>')
+    Fragment.create(
+      document: document,
+      ref: '1.1.3',
+      level: 3,
+      rank: 4,
+      descendent_rank: 4,
+      parent: chapter11,
+      xml: '<l/>',
+    )
   end
   let!(:chapter12) do
-    Fragment.create(document: document, ref: '1.2', level: 2, rank: 5, parent: book1, xml: '<chapter n="2"/>')
+    Fragment.create(document: document, ref: '1.2', level: 2, rank: 5, descendent_rank: 6, parent: book1, xml: '<c/>')
   end
   let!(:line121) do
-    Fragment.create(document: document, ref: '1.2.1', level: 3, rank: 6, parent: chapter12, xml: '<line n="1"/>')
+    Fragment.create(
+      document: document,
+      ref: '1.2.1',
+      level: 3,
+      rank: 6,
+      descendent_rank: 6,
+      parent: chapter12,
+      xml: '<l/>',
+    )
   end
-  let!(:book2) { Fragment.create(document: document, ref: '2', level: 1, rank: 7, xml: '<book n="2"/>') }
+  let!(:book2) { Fragment.create(document: document, ref: '2', level: 1, rank: 7, descendent_rank: 8, xml: '<b/>') }
   let!(:chapter21) do
-    Fragment.create(document: document, ref: '2.1', level: 2, rank: 8, parent: book2, xml: '<chapter n="1"/>')
+    Fragment.create(document: document, ref: '2.1', level: 2, rank: 8, descendent_rank: 8, parent: book2, xml: '<c/>')
   end
-  let!(:book3) { Fragment.create(document: document, ref: '3', level: 1, rank: 9, xml: '<book n="3"/>') }
+  let!(:book3) { Fragment.create(document: document, ref: '3', level: 1, rank: 9, descendent_rank: 10, xml: '<b/>') }
   let!(:chapter31) do
-    Fragment.create(document: document, ref: '3.1', level: 2, rank: 10, parent: book3, xml: '<chapter n="1"/>')
+    Fragment.create(document: document, ref: '3.1', level: 2, rank: 10, descendent_rank: 10, parent: book3, xml: '<c/>')
   end
 
   specify 'Passage References as children of a textual Resource' do

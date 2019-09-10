@@ -9,7 +9,7 @@ class CollectionsController < ApplicationController
   private
 
   def presenter
-    @presenter ||= CollectionPresenter.from_collection(collection, nav: nav, page: page)
+    @presenter ||= CollectionPresenter.new(collection, nav: nav, page: page)
   end
 
   def collection

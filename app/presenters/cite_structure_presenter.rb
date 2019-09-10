@@ -1,13 +1,13 @@
 class CiteStructurePresenter < ApplicationPresenter
-  attr_accessor :cite_structure
+  attr_accessor :collection
 
-  def self.from_collection(collection)
-    new(cite_structure: collection.cite_structure)
+  def initialize(collection)
+    @collection = collection
   end
 
   def json
     {}.tap do |json|
-      cite_structure.each do |cite|
+      collection.cite_structure.each do |cite|
         nested_structure = { 'dts:citeType': cite }
 
         json[:'dts:citeStructure'] = [nested_structure]

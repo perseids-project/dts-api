@@ -8,15 +8,15 @@ module ProcessFragments
   end
 
   def fragment
-    @fragment ||= Fragment.find_by(document: document, ref: ref)
+    @fragment ||= ref && Fragment.find_by(document: document, ref: ref)
   end
 
   def start_fragment
-    @start_fragment ||= Fragment.find_by(document: document, ref: start)
+    @start_fragment ||= start && Fragment.find_by(document: document, ref: start)
   end
 
   def stop_fragment
-    @stop_fragment ||= Fragment.find_by(document: document, ref: stop)
+    @stop_fragment ||= stop && Fragment.find_by(document: document, ref: stop)
   end
 
   def fragment_not_found?

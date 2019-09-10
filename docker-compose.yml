@@ -4,10 +4,6 @@ services:
     image: postgres
     ports:
       - 5434:5432
-  redis:
-    image: redis
-    ports:
-     - 6379:6379
   web:
     build: .
     command: bundle exec rails server -b 0.0.0.0 -p 3000
@@ -19,4 +15,3 @@ services:
       - DATABASE_URL=postgres://postgres@db
     links:
       - db
-      - redis

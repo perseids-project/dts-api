@@ -17,26 +17,6 @@ class DocumentsController < ApplicationController
   end
 
   def presenter
-    return @presenter if @presenter
-
-    if ref
-      @presenter = fragment_presenter
-    elsif start || stop
-      @presenter = start_stop_presenter
-    else
-      @presenter = document_presenter
-    end
-  end
-
-  def fragment_presenter
-    DocumentPresenter.from_fragment(fragment, start: start, stop: stop)
-  end
-
-  def start_stop_presenter
-    DocumentPresenter.from_start_and_stop(start_fragment, stop_fragment)
-  end
-
-  def document_presenter
-    DocumentPresenter.from_document(document)
+    @presenter ||= DocumentPresenter.new(document, fragment, start_fragment, stop_fragment)
   end
 end

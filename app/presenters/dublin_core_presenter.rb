@@ -1,20 +1,9 @@
 class DublinCorePresenter < ApplicationPresenter
-  attr_accessor :titles, :descriptions, :language
+  attr_accessor :collection
+  delegate :language, to: :collection
 
-  def self.from_collection(collection)
-    titles = collection.collection_titles.order(:id).map do |ct|
-      DublinCoreItemPresenter.from_collection_title(ct)
-    end
-
-    descriptions = collection.collection_descriptions.order(:id).map do |cd|
-      DublinCoreItemPresenter.from_collection_description(cd)
-    end
-
-    new(titles: titles, descriptions: descriptions, language: collection.language)
-  end
-
-  def self.default
-    new(titles: [])
+  def initialize(collection)
+    @collection = collection
   end
 
   def json
@@ -25,5 +14,19 @@ class DublinCorePresenter < ApplicationPresenter
     dublincore[:'dc:language'] = language if language.present?
 
     dublincore.present? ? { 'dts:dublincore': dublincore } : {}
+  end
+
+  private
+
+  def titles
+    @titles ||= collection.collection_titles.order(:id).map do |ct|
+      DublinCoreItemPresenter.from_collection_title(ct)
+    end
+  end
+
+  def descriptions
+    @descriptions ||= collection.collection_descriptions.order(:id).map do |cd|
+      DublinCoreItemPresenter.from_collection_description(cd)
+    end
   end
 end

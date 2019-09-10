@@ -1,55 +1,16 @@
 class CollectionPresenter < ApplicationPresenter
-  attr_accessor :cite_depth, :cite_structure, :description, :dublincore, :id, :last_page, :member_proc,
-    :nav, :nested, :page, :title, :total, :type
+  attr_accessor :collection, :nav, :page, :nested
+  delegate :urn, :cite_depth, :description, :title, :children_count, to: :collection
 
-  def self.from_collection(collection, nav: 'children', page: nil, nested: false)
-    new(
-      cite_depth: collection.cite_depth,
-      cite_structure: CiteStructurePresenter.from_collection(collection),
-      description: collection.description,
-      dublincore: DublinCorePresenter.from_collection(collection),
-      id: collection.urn,
-      last_page: last_page(collection, nav, page),
-      member_proc: member_proc(collection, nav, page),
-      nav: nav,
-      nested: nested,
-      page: page,
-      title: collection.title,
-      total: collection.children_count,
-      type: collection.display_type.titleize,
-    )
+  def initialize(collection, nav: 'children', page: nil, nested: false)
+    @collection = collection
+    @nav = nav
+    @page = page
+    @nested = nested
   end
-
-  def self.member_proc(collection, nav, page)
-    lambda do
-      if nav == 'parents' && collection.parent
-        [from_collection(collection.parent, nested: true)]
-      elsif page && nav == 'children'
-        collection.paginated_children(page).map { |c| from_collection(c, nested: true) }
-      elsif nav == 'children'
-        collection.children.order(:id).map { |c| from_collection(c, nested: true) }
-      else
-        []
-      end
-    end
-  end
-
-  def self.last_page(collection, nav, page)
-    if !page
-      nil
-    elsif nav == 'parents' && collection.parent
-      1
-    elsif nav == 'children'
-      collection.last_page
-    else
-      0
-    end
-  end
-
-  private_class_method :member_proc, :last_page
 
   def valid?
-    return false unless %w[children parents].member?(nav)
+    return false unless parents? || children?
     return false if page && !page_valid?
 
     true
@@ -57,11 +18,11 @@ class CollectionPresenter < ApplicationPresenter
 
   def json
     {
-      '@id': id,
-      '@type': type,
-      totalItems: total,
+      '@id': urn,
+      '@type': collection.display_type.titleize,
+      totalItems: children_count,
       title: title,
-    }.merge(optional_json, member_json, context_json, resource_json, view_json, dublincore.json)
+    }.merge(optional_json, member_json, context_json, resource_json, view_json, dublincore_json)
   end
 
   private
@@ -79,7 +40,7 @@ class CollectionPresenter < ApplicationPresenter
   def member_json
     return {} if nested
 
-    member = member_proc.call
+    member = members
 
     return {} if member.empty?
 
@@ -99,19 +60,62 @@ class CollectionPresenter < ApplicationPresenter
   end
 
   def resource_json
-    return {} unless type == 'Resource'
-
-    {
-      'dts:passage': documents_path(id: id),
-      'dts:references': navigation_path(id: id),
-      'dts:download': documents_path(id: id),
-      'dts:citeDepth': cite_depth,
-    }.merge!(cite_structure.json)
+    CollectionMetadataPresenter.new(collection).json
   end
 
   def view_json
     return {} unless page
 
-    { view: PartialCollectionPresenter.new(id: id, page: page, last_page: last_page, nav: nav) }
+    { view: PartialCollectionPresenter.new(id: urn, page: page, last_page: last_page, nav: nav) }
+  end
+
+  def dublincore_json
+    DublinCorePresenter.new(collection).json
+  end
+
+  def members
+    return @members if @members
+
+    if parents?
+      @members = parent_members
+    elsif page
+      @members = paginated_members
+    else
+      @members = child_members
+    end
+  end
+
+  def parent_members
+    collection.parent ? [CollectionPresenter.new(collection.parent, nested: true)] : []
+  end
+
+  def paginated_members
+    collection.paginated_children(page).map { |c| CollectionPresenter.new(c, nested: true) }
+  end
+
+  def child_members
+    collection.children.order(:id).map { |c| CollectionPresenter.new(c, nested: true) }
+  end
+
+  def last_page
+    return @last_page if @last_page
+
+    if !page
+      @last_page = nil
+    elsif parents? && collection.parent
+      @last_page = 1
+    elsif children?
+      @last_page = collection.last_page
+    else
+      @last_page = 0
+    end
+  end
+
+  def parents?
+    nav == 'parents'
+  end
+
+  def children?
+    nav == 'children'
   end
 end

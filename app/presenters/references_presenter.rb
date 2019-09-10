@@ -1,11 +1,9 @@
 class ReferencesPresenter < ApplicationPresenter
-  attr_accessor :refs, :group_by
+  attr_accessor :fragments, :group_by
 
-  def self.from_fragments(fragments, group_by:)
-    new(
-      refs: fragments.map(&:ref),
-      group_by: group_by,
-    )
+  def initialize(fragments, group_by:)
+    @fragments = fragments
+    @group_by = group_by
   end
 
   def json
@@ -20,5 +18,9 @@ class ReferencesPresenter < ApplicationPresenter
 
   def grouped_json
     refs.each_slice(group_by).map { |n| { start: n.first, end: n.last } }
+  end
+
+  def refs
+    @refs ||= fragments.map(&:ref)
   end
 end

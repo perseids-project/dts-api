@@ -1,6 +1,6 @@
 class CollectionPresenter < ApplicationPresenter
   attr_accessor :collection, :nav, :page, :nested
-  delegate :urn, :cite_depth, :description, :title, :children_count, to: :collection
+  delegate :urn, :description, :title, :children_count, to: :collection
 
   def initialize(collection, nav: 'children', page: nil, nested: false)
     @collection = collection

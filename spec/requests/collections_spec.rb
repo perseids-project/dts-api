@@ -4,8 +4,8 @@ RSpec.describe '/collections', type: :request do
   let!(:root) { Collection.create(urn: 'default', title: 'Root') }
   let!(:books) { Collection.create(urn: 'books', title: 'collection of books', parent: root) }
   let!(:magazines) { Collection.create(urn: 'magazines', title: 'collection of magazines', parent: root) }
-  let!(:fiction) { Collection.create(urn: 'fiction', title: 'fiction books', parent: books) }
-  let!(:nonfiction) { Collection.create(urn: 'nonfiction', title: 'nonfiction books', parent: books) }
+  let!(:herodotus) { Collection.create(urn: 'herodotus', title: 'histories', parent: books) }
+  let!(:thucydides) { Collection.create(urn: 'thucydides', title: 'peloponnesian war', parent: books) }
   let!(:news) do
     Collection.create(
       urn: 'news',
@@ -21,7 +21,7 @@ RSpec.describe '/collections', type: :request do
       title: 'The Histories',
       description: 'The Histories by Herodotus of Halicarnassus',
       display_type: 'resource',
-      parent: nonfiction,
+      parent: herodotus,
       language: 'grc',
       cite_structure: %w[book chapter section],
       document: Document.new(urn: 'urn', xml: '<test/>'),
@@ -33,7 +33,7 @@ RSpec.describe '/collections', type: :request do
       title: 'History of the Peloponnesian War',
       description: 'History of the Peloponnesian War by Thucydides',
       display_type: 'resource',
-      parent: nonfiction,
+      parent: thucydides,
       language: 'grc',
       cite_structure: [],
       document: Document.new(urn: 'urn', xml: '<test/>'),
@@ -48,7 +48,7 @@ RSpec.describe '/collections', type: :request do
     CollectionDescription.create(description: 'magazines sur les nouvelles', language: 'fr', collection: news)
   end
 
-  it 'lists all top-level collections' do
+  specify 'Root collection' do
     get '/collections'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -70,7 +70,7 @@ RSpec.describe '/collections', type: :request do
     )
   end
 
-  it 'lists all members of a particular collection' do
+  specify 'Child collection' do
     get '/collections/?id=books'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -84,15 +84,15 @@ RSpec.describe '/collections', type: :request do
       '@id' => 'books',
       '@type' => 'Collection',
       'member' => [
-        { '@id' => 'fiction', '@type' => 'Collection', 'title' => 'fiction books', 'totalItems' => 0 },
-        { '@id' => 'nonfiction', '@type' => 'Collection', 'title' => 'nonfiction books', 'totalItems' => 2 },
+        { '@id' => 'herodotus', '@type' => 'Collection', 'title' => 'histories', 'totalItems' => 1 },
+        { '@id' => 'thucydides', '@type' => 'Collection', 'title' => 'peloponnesian war', 'totalItems' => 1 },
       ],
       'title' => 'collection of books',
       'totalItems' => 2,
     )
   end
 
-  it 'lists title and language information' do
+  specify 'Child collection with language information' do
     get '/collections/?id=news'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -134,7 +134,7 @@ RSpec.describe '/collections', type: :request do
     )
   end
 
-  it 'lists title and language information of members' do
+  specify 'Child collection with children that have language information' do
     get '/collections/?id=magazines'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -184,8 +184,8 @@ RSpec.describe '/collections', type: :request do
     )
   end
 
-  it 'shows that the default collection has no parent' do
-    get '/collections/?nav=parents'
+  specify 'Child collection representing a single work' do
+    get '/collections/?id=herodotus'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
     expect(response).to have_http_status(:ok)
@@ -195,56 +195,37 @@ RSpec.describe '/collections', type: :request do
         'dc' => 'http://purl.org/dc/terms/',
         'dts' => 'https://w3id.org/dts/api#',
       },
-      '@id' => 'default',
-      '@type' => 'Collection',
-      'title' => 'Root',
-      'totalItems' => 2,
-    )
-  end
-
-  it 'shows the parent of a collection' do
-    get '/collections/?id=fiction&nav=parents'
-
-    expect(response.content_type).to eq('application/ld+json; charset=utf-8')
-    expect(response).to have_http_status(:ok)
-    expect(JSON.parse(response.body)).to match(
-      '@context' => {
-        '@vocab' => 'https://www.w3.org/ns/hydra/core#',
-        'dc' => 'http://purl.org/dc/terms/',
-        'dts' => 'https://w3id.org/dts/api#',
-      },
-      '@id' => 'fiction',
+      '@id' => 'herodotus',
       '@type' => 'Collection',
       'member' => [
-        { '@id' => 'books', '@type' => 'Collection', 'title' => 'collection of books', 'totalItems' => 2 },
+        {
+          '@id' => 'histories',
+          '@type' => 'Resource',
+          'description' => 'The Histories by Herodotus of Halicarnassus',
+          'dts:citeDepth' => 3,
+          'dts:citeStructure' => [{
+            'dts:citeStructure' => [{
+              'dts:citeType' => 'chapter',
+              'dts:citeStructure' => [{
+                'dts:citeType' => 'section',
+              }],
+            }],
+            'dts:citeType' => 'book',
+          }],
+          'dts:download' => '/documents?id=histories',
+          'dts:dublincore' => { 'dc:language' => 'grc' },
+          'dts:passage' => '/documents?id=histories',
+          'dts:references' => '/navigation?id=histories',
+          'title' => 'The Histories',
+          'totalItems' => 0,
+        },
       ],
-      'title' => 'fiction books',
-      'totalItems' => 0,
+      'title' => 'histories',
+      'totalItems' => 1,
     )
   end
 
-  it 'shows the parent of a top-level collection' do
-    get '/collections/?id=books&nav=parents'
-
-    expect(response.content_type).to eq('application/ld+json; charset=utf-8')
-    expect(response).to have_http_status(:ok)
-    expect(JSON.parse(response.body)).to match(
-      '@context' => {
-        '@vocab' => 'https://www.w3.org/ns/hydra/core#',
-        'dc' => 'http://purl.org/dc/terms/',
-        'dts' => 'https://w3id.org/dts/api#',
-      },
-      '@id' => 'books',
-      '@type' => 'Collection',
-      'member' => [
-        { '@id' => 'default', '@type' => 'Collection', 'title' => 'Root', 'totalItems' => 2 },
-      ],
-      'title' => 'collection of books',
-      'totalItems' => 2,
-    )
-  end
-
-  it 'returns extra fields when collection is a resource' do
+  specify 'Child readable collection (i.e. a textual resource)' do
     get '/collections/?id=histories'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -277,7 +258,7 @@ RSpec.describe '/collections', type: :request do
     )
   end
 
-  it 'skips cite structure when there is none' do
+  specify 'Child readable collection with no cite structure' do
     get '/collections/?id=peloponnesian-war'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -301,7 +282,67 @@ RSpec.describe '/collections', type: :request do
     )
   end
 
-  it 'does not accept a malformed nav' do
+  specify 'Root parent collection query' do
+    get '/collections/?nav=parents'
+
+    expect(response.content_type).to eq('application/ld+json; charset=utf-8')
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)).to match(
+      '@context' => {
+        '@vocab' => 'https://www.w3.org/ns/hydra/core#',
+        'dc' => 'http://purl.org/dc/terms/',
+        'dts' => 'https://w3id.org/dts/api#',
+      },
+      '@id' => 'default',
+      '@type' => 'Collection',
+      'title' => 'Root',
+      'totalItems' => 2,
+    )
+  end
+
+  specify 'Parent collection query' do
+    get '/collections/?id=herodotus&nav=parents'
+
+    expect(response.content_type).to eq('application/ld+json; charset=utf-8')
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)).to match(
+      '@context' => {
+        '@vocab' => 'https://www.w3.org/ns/hydra/core#',
+        'dc' => 'http://purl.org/dc/terms/',
+        'dts' => 'https://w3id.org/dts/api#',
+      },
+      '@id' => 'herodotus',
+      '@type' => 'Collection',
+      'member' => [
+        { '@id' => 'books', '@type' => 'Collection', 'title' => 'collection of books', 'totalItems' => 2 },
+      ],
+      'title' => 'histories',
+      'totalItems' => 1,
+    )
+  end
+
+  specify 'Child of root parent collection query' do
+    get '/collections/?id=books&nav=parents'
+
+    expect(response.content_type).to eq('application/ld+json; charset=utf-8')
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)).to match(
+      '@context' => {
+        '@vocab' => 'https://www.w3.org/ns/hydra/core#',
+        'dc' => 'http://purl.org/dc/terms/',
+        'dts' => 'https://w3id.org/dts/api#',
+      },
+      '@id' => 'books',
+      '@type' => 'Collection',
+      'member' => [
+        { '@id' => 'default', '@type' => 'Collection', 'title' => 'Root', 'totalItems' => 2 },
+      ],
+      'title' => 'collection of books',
+      'totalItems' => 2,
+    )
+  end
+
+  specify 'Malformed query' do
     get '/collections/?nav=badinput'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -315,7 +356,7 @@ RSpec.describe '/collections', type: :request do
     )
   end
 
-  it 'returns not found when there is no collection' do
+  specify 'Collection not found' do
     get '/collections/?id=sandwiches'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')

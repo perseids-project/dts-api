@@ -8,7 +8,7 @@ RSpec.describe '/collections?page=', type: :request do
     (1..25).each { |n| Collection.create(urn: "book-#{n}", title: "book-#{n}", parent: books) }
   end
 
-  it 'limits the number of entries for a page' do
+  specify 'Paginated child collection' do
     get '/collections/?id=books&page=1'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -36,7 +36,7 @@ RSpec.describe '/collections?page=', type: :request do
     )
   end
 
-  it 'shows previous and next in the view' do
+  specify 'Paginated child collection with next and previous' do
     get '/collections/?id=books&page=2'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -65,7 +65,7 @@ RSpec.describe '/collections?page=', type: :request do
     )
   end
 
-  it 'shows fewer than ten entries if there are fewer than ten for the page' do
+  specify 'Paginated child collection with fewer than 10 entries' do
     get '/collections/?id=books&page=3'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -93,7 +93,7 @@ RSpec.describe '/collections?page=', type: :request do
     )
   end
 
-  it 'shows the correct id when the nav is parents' do
+  specify 'Paginated child collection with parent navigation' do
     get '/collections/?id=books&page=1&nav=parents'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -120,7 +120,7 @@ RSpec.describe '/collections?page=', type: :request do
     )
   end
 
-  it 'is invalid when there are no children' do
+  specify 'Paginated child collection with no children' do
     get '/collections/?id=book-1&page=1'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -134,7 +134,7 @@ RSpec.describe '/collections?page=', type: :request do
     )
   end
 
-  it 'is invalid when nav is parents but there are no parents' do
+  specify 'Paginated child collection with parent navigation but no parents' do
     get '/collections/?id=default&page=1&nav=parents'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -148,7 +148,7 @@ RSpec.describe '/collections?page=', type: :request do
     )
   end
 
-  it 'does not accept a non-numeric page' do
+  specify 'Paginated child collection with invalid page number' do
     get '/collections/?id=books&page=badinput'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -162,7 +162,7 @@ RSpec.describe '/collections?page=', type: :request do
     )
   end
 
-  it 'does not accept a page less than 1' do
+  specify 'Paginated child with page number below range' do
     get '/collections/?id=books&page=0'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')
@@ -176,7 +176,7 @@ RSpec.describe '/collections?page=', type: :request do
     )
   end
 
-  it 'does not accept a page greater than the maximum' do
+  specify 'Paginated child with page number above range' do
     get '/collections/?id=books&page=4'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')

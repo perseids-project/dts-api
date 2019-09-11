@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Pages', type: :request do
-  it 'displays the entrypoint information' do
+  specify 'Base API endpoint' do
     get '/'
 
     expect(response.content_type).to eq('application/ld+json; charset=utf-8')

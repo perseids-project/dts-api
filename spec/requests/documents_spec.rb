@@ -123,7 +123,7 @@ RSpec.describe '/documents', type: :request do
     ))
   end
 
-  specify 'Given ref and start' do
+  specify 'Malformed query' do
     get '/documents/?id=urn&ref=1&start=1'
 
     expect(response.content_type).to eq('application/tei+xml; charset=utf-8')

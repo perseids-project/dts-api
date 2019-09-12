@@ -3,9 +3,15 @@ class Collection < ApplicationRecord
 
   belongs_to :parent, class_name: 'Collection', optional: true, counter_cache: :children_count
 
-  has_many :children, class_name: 'Collection', dependent: :destroy, foreign_key: :parent_id, inverse_of: :parent
-  has_many :collection_descriptions, dependent: :destroy
-  has_many :collection_titles, dependent: :destroy
+  has_many :children,
+    -> { order(:id) },
+    class_name: 'Collection',
+    dependent: :destroy,
+    foreign_key: :parent_id,
+    inverse_of: :parent
+
+  has_many :collection_descriptions, -> { order(:id) }, dependent: :destroy, inverse_of: :collection
+  has_many :collection_titles, -> { order(:id) }, dependent: :destroy, inverse_of: :collection
 
   has_one :document, dependent: :destroy
 

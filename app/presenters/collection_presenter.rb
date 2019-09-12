@@ -90,11 +90,15 @@ class CollectionPresenter < ApplicationPresenter
   end
 
   def paginated_members
-    collection.paginated_children(page).map { |c| CollectionPresenter.new(c, nested: true) }
+    members = collection.paginated_children(page).includes(:collection_titles, :collection_descriptions)
+
+    members.map { |c| CollectionPresenter.new(c, nested: true) }
   end
 
   def child_members
-    collection.children.order(:id).map { |c| CollectionPresenter.new(c, nested: true) }
+    members = collection.children.includes(:collection_titles, :collection_descriptions)
+
+    members.map { |c| CollectionPresenter.new(c, nested: true) }
   end
 
   def last_page

@@ -19,13 +19,13 @@ class DublinCorePresenter < ApplicationPresenter
   private
 
   def titles
-    @titles ||= collection.collection_titles.order(:id).map do |ct|
+    @titles ||= collection.collection_titles.map do |ct|
       DublinCoreItemPresenter.from_collection_title(ct)
     end
   end
 
   def descriptions
-    @descriptions ||= collection.collection_descriptions.order(:id).map do |cd|
+    @descriptions ||= collection.collection_descriptions.map do |cd|
       DublinCoreItemPresenter.from_collection_description(cd)
     end
   end

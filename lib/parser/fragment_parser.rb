@@ -71,23 +71,14 @@ class FragmentParser
   end
 
   def wrap(xml_fragment)
-    # Ideally this would use Nokogiri::XML::Builder
-    # but I got errors using a generated document not created from a string
-    base = Nokogiri::XML(<<-XML.strip_heredoc)
-      <?xml version="1.0" encoding="UTF-8"?>
-      <TEI xmlns="http://www.tei-c.org/ns/1.0">
-        <dts:fragment xmlns:dts="https://w3id.org/dts/api#">
-        </dts:fragment>
-      </TEI>
-    XML
-
-    base.xpath(
-      '/tei:TEI/dts:fragment',
-      tei: 'http://www.tei-c.org/ns/1.0',
-      dts: 'https://w3id.org/dts/api#',
-    ).first << xml_fragment.clone
-
-    base.to_xml
+    [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<TEI xmlns="http://www.tei-c.org/ns/1.0">',
+      '<dts:fragment xmlns:dts="https://w3id.org/dts/api#">'.indent(2),
+      xml_fragment.to_xml.split("\n").map { |n| n.lstrip.indent(4) }.join("\n"),
+      '</dts:fragment>'.indent(2),
+      '</TEI>',
+    ].join("\n")
   end
 
   def gsub_hash(string, gsubs)

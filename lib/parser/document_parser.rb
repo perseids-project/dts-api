@@ -6,14 +6,15 @@ class Parser
   class DocumentParser
     include ParserUtils
 
-    def self.build(file, parent, work)
-      new(file, parent, work).build
+    def self.build(file, parent, work, logger)
+      new(file, parent, work, logger).build
     end
 
-    def initialize(file, parent, work)
+    def initialize(file, parent, work, logger)
       @file = file
       @parent = parent
       @work = work
+      @logger = logger
     end
 
     def build
@@ -27,7 +28,7 @@ class Parser
 
     private
 
-    attr_reader :file, :parent, :work
+    attr_reader :file, :parent, :work, :logger
 
     def resources_from_tags(tags, directory)
       tags.map { |edition| resource_from_edition(edition, directory) }.compact
@@ -39,11 +40,15 @@ class Parser
 
       return nil unless File.exist?(filepath)
 
-      file = File.read(filepath)
+      logger.info("Parsing #{filepath}")
+      file = read(filepath)
       xml = Nokogiri::XML(file, &:huge)
       document = Document.new(urn: urn, xml: file)
       FragmentParser.build(document, xml)
+      build_collection(urn, edition, document, xml)
+    end
 
+    def build_collection(urn, edition, document, xml)
       Collection.new(
         urn: urn,
         display_type: 'resource',

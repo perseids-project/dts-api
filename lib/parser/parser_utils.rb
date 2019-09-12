@@ -4,6 +4,11 @@ class Parser
   module ParserUtils
     include Utils
 
+    def read(file)
+      logger.info("Parsing file #{file}")
+      File.read(file)
+    end
+
     def collect_tags(xml, tag)
       tags = []
       if xml.namespaces.member?('xmlns:ti')

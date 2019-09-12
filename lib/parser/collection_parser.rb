@@ -5,9 +5,10 @@ class Parser
   class CollectionParser
     include ParserUtils
 
-    def initialize(name, collections)
+    def initialize(name, collections, logger)
       @name = name
       @collections = collections
+      @logger = logger
     end
 
     def parse!
@@ -22,7 +23,7 @@ class Parser
 
     private
 
-    attr_reader :name, :collections
+    attr_reader :name, :collections, :logger
 
     def find_group_cts_files
       Dir.glob(path(name, 'data', '*', '__cts__.xml')).sort
@@ -35,7 +36,7 @@ class Parser
     end
 
     def parse_group_cts_file(file)
-      cts = Nokogiri::XML(File.read(file))
+      cts = Nokogiri::XML(read(file))
 
       text_group = collect_tags(cts, 'textgroup')[0]
       urn = text_group['urn']
@@ -50,7 +51,7 @@ class Parser
     end
 
     def parse_work_cts_file(file, parent)
-      cts = Nokogiri::XML(File.read(file))
+      cts = Nokogiri::XML(read(file))
 
       work = collect_tags(cts, 'work')[0]
       urn = work['urn']
@@ -62,7 +63,7 @@ class Parser
 
       titles = collect_tags(work, 'title')
       build_collection_titles(collection, titles)
-      DocumentParser.build(file, collection, work)
+      DocumentParser.build(file, collection, work, logger)
 
       collection.tap(&:save!)
     end

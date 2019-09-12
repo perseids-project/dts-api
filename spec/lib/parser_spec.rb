@@ -3,6 +3,7 @@ require 'parser'
 
 RSpec.describe Parser do
   describe '.parse!' do
+    let(:logger) { Logger.new(nil) }
     let(:dts_collections) do
       [
         { match: /^urn:cts:latinLit:/, title: 'Latin', urn: 'urn:perseids:latinLit' },
@@ -18,7 +19,7 @@ RSpec.describe Parser do
         Rails.root.join('texts').to_s,
       )
 
-      Parser.parse!('canonical-latinLit', dts_collections)
+      Parser.parse!('canonical-latinLit', dts_collections, logger)
     end
 
     after do

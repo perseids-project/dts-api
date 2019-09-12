@@ -5,6 +5,15 @@ services:
     ports:
       - 5434:5432
   web:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./tmp/nginx-cache:/opt/cache
+    ports:
+      - 3001:3001
+    links:
+      - app
+  app:
     build: .
     command: bundle exec rails server -b 0.0.0.0 -p 3000
     volumes:

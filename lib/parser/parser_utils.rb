@@ -4,6 +4,8 @@ class Parser
   module ParserUtils
     include Utils
 
+    private
+
     def read(file)
       logger.info("Parsing file #{file}")
       File.read(file)
@@ -24,13 +26,13 @@ class Parser
 
     def build_collection_titles(collection, titles)
       generic_title = nil
-      collection.collection_titles = []
+      collection_titles = []
 
       titles.each do |title|
         text = title.text.squish
 
         if title['xml:lang'].present? && text.present?
-          collection.collection_titles << CollectionTitle.new(
+          collection_titles << CollectionTitle.new(
             title: text,
             language: title['xml:lang'],
           )
@@ -39,7 +41,14 @@ class Parser
         end
       end
 
+      collection.collection_titles = collection_titles if titles_differ?(collection, collection_titles)
+
       set_collection_title(collection, generic_title)
+    end
+
+    def titles_differ?(collection, titles)
+      !collection.collection_titles ||
+        collection.collection_titles.map { |t| [t.title, t.language] } != titles.map { |t| [t.title, t.language] }
     end
 
     def build_collection_descriptions(collection, descriptions)

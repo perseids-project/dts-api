@@ -42,8 +42,12 @@ class Parser
 
       logger.info("Parsing #{filepath}")
       file = read(filepath)
+
+      document = Document.find_or_initialize_by(urn: urn, xml: file)
+
+      return document.collection if document.persisted?
+
       xml = Nokogiri::XML(file, &:huge)
-      document = Document.new(urn: urn, xml: file)
       FragmentParser.build(document, xml)
       build_collection(urn, edition, document, xml)
     end

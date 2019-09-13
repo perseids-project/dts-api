@@ -304,5 +304,54 @@ RSpec.describe Parser do
         ),
       ])
     end
+
+    it 'is idempotent' do
+      collections_before = Collection.all.order(:id).to_a
+      documents_before = Document.all.order(:id).to_a
+      titles_before = CollectionTitle.all.order(:id).to_a
+      descriptions_before = CollectionDescription.all.order(:id).to_a
+      fragments_before = Fragment.all.order(:id).to_a
+
+      Parser.parse!('canonical-latinLit', dts_collections, logger)
+
+      collections_after = Collection.all.order(:id).to_a
+      documents_after = Document.all.order(:id).to_a
+      titles_after = CollectionTitle.all.order(:id).to_a
+      descriptions_after = CollectionDescription.all.order(:id).to_a
+      fragments_after = Fragment.all.order(:id).to_a
+
+      expect(collections_before).to eq(collections_after)
+      expect(documents_before).to eq(documents_after)
+      expect(titles_before).to eq(titles_after)
+      expect(descriptions_before).to eq(descriptions_after)
+      expect(fragments_before).to eq(fragments_after)
+    end
+
+    it 'makes changes when the file is different from the XML' do
+      document_before = Document.find_by(urn: 'urn:cts:latinLit:phi0959.phi001.perseus-lat2')
+      document_before.update!(xml: '<test/>')
+      document_fragments_before = document_before.fragments.to_a
+
+      collections_before = Collection.all.order(:id).to_a
+      documents_before = Document.all.order(:id).to_a
+      fragments_before = Fragment.all.order(:xml).to_a
+
+      Parser.parse!('canonical-latinLit', dts_collections, logger)
+
+      collections_after = Collection.all.order(:id).to_a
+      documents_after = Document.all.order(:id).to_a
+      fragments_after = Fragment.all.order(:xml).to_a
+
+      document_after = Document.find_by(urn: 'urn:cts:latinLit:phi0959.phi001.perseus-lat2')
+      document_fragments_after = document_after.fragments.to_a
+
+      expect(document_after.xml).to include('<l n="1">Arma gravi numero violentaque bella parabam</l>')
+      expect(collections_before - [document_before.collection]).to eq(collections_after - [document_after.collection])
+      expect(documents_before - [document_before]).to eq(documents_after - [document_after])
+      expect(fragments_before - document_fragments_before).to eq(fragments_after - document_fragments_after)
+
+      expect(fragments_before).to_not eq(fragments_after)
+      expect(fragments_before.map(&:xml)).to eq(fragments_after.map(&:xml))
+    end
   end
 end

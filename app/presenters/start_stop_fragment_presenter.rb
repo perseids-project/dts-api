@@ -45,6 +45,6 @@ class StartStopFragmentPresenter < ApplicationPresenter
 
     path = documents_path(id: urn, start: fragments.first.ref, end: fragments.last.ref)
 
-    "<#{path}>; rel=\”#{name}\”"
+    "<#{path}>; rel=\"#{name}\""
   end
 end

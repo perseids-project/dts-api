@@ -64,11 +64,11 @@ RSpec.describe '/documents', type: :request do
     expect(response.content_type).to eq('application/tei+xml; charset=utf-8')
     expect(response).to have_http_status(:ok)
     expect(response.headers['Link']).to eq(%(
-      </documents?id=urn&ref=2>; rel=”next”,
-      </documents?id=urn&ref=1>; rel=”first”,
-      </documents?id=urn&ref=4>; rel=”last”,
-      </navigation?id=urn>; rel=”contents”,
-      </collections?id=urn>; rel=”collection”
+      </documents?id=urn&ref=2>; rel="next",
+      </documents?id=urn&ref=1>; rel="first",
+      </documents?id=urn&ref=4>; rel="last",
+      </navigation?id=urn>; rel="contents",
+      </collections?id=urn>; rel="collection"
     ).squish)
     expect(response.body).to be_equivalent_to(%(
       <?xml version="1.0" encoding="UTF-8"?>
@@ -88,11 +88,11 @@ RSpec.describe '/documents', type: :request do
     expect(response.content_type).to eq('application/tei+xml; charset=utf-8')
     expect(response).to have_http_status(:ok)
     expect(response.headers['Link']).to eq(%(
-      </documents?end=2&id=urn&start=1>; rel=”prev”,
-      </documents?end=2&id=urn&start=1>; rel=”first”,
-      </documents?end=4&id=urn&start=3>; rel=”last”,
-      </navigation?id=urn>; rel=”contents”,
-      </collections?id=urn>; rel=”collection”
+      </documents?end=2&id=urn&start=1>; rel="prev",
+      </documents?end=2&id=urn&start=1>; rel="first",
+      </documents?end=4&id=urn&start=3>; rel="last",
+      </navigation?id=urn>; rel="contents",
+      </collections?id=urn>; rel="collection"
     ).squish)
     expect(response.body).to be_equivalent_to(%(
       <?xml version="1.0" encoding="UTF-8"?>
@@ -115,8 +115,8 @@ RSpec.describe '/documents', type: :request do
     expect(response.content_type).to eq('application/tei+xml; charset=utf-8')
     expect(response).to have_http_status(:ok)
     expect(response.headers['Link']).to eq(%(
-      </navigation?id=urn>; rel=”contents”,
-      </collections?id=urn>; rel=”collection”
+      </navigation?id=urn>; rel="contents",
+      </collections?id=urn>; rel="collection"
     ).squish)
     expect(response.body).to be_equivalent_to(%(
       <entire-document/>

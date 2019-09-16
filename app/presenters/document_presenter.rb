@@ -20,8 +20,8 @@ class DocumentPresenter < ApplicationPresenter
 
   def link_header
     (links + [
-      "<#{navigation_path(id: urn)}>; rel=\”contents\”",
-      "<#{collections_path(id: collection_urn)}>; rel=\”collection\”",
+      "<#{navigation_path(id: urn)}>; rel=\"contents\"",
+      "<#{collections_path(id: collection_urn)}>; rel=\"collection\"",
     ]).join(', ')
   end
 

@@ -22,6 +22,6 @@ class FragmentPresenter < ApplicationPresenter
   def link(name, fragment)
     return nil unless fragment
 
-    "<#{documents_path(id: urn, ref: fragment.ref)}>; rel=\”#{name}\”"
+    "<#{documents_path(id: urn, ref: fragment.ref)}>; rel=\"#{name}\""
   end
 end

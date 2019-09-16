@@ -191,6 +191,13 @@ config.dts_repositories = [
 and `config.dts_repositories` specifies what Git repositories the
 text is pulled from.
 
+## Running the application
+
+* `docker-compose up`
+
+Visit `localhost:3000` to access the Rails application directly
+or visit `localhost:3001` to hit the cache (which uses Nginx).
+
 ## Bugs and feature requests
 
 For any bugs or feature requests, please create

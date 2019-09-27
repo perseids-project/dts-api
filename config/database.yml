@@ -16,4 +16,4 @@ production:
   <<: *default
   database: dts_production
   username: dts
-  password: <%= ENV['PLATFORM_DATABASE_PASSWORD'] %>
+  password: <%= ENV['DTS_DATABASE_PASSWORD'] %>

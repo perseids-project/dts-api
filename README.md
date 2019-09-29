@@ -91,10 +91,10 @@ curl 'http://localhost:3001/navigation?id=urn:cts:greekLit:tlg0016.tlg001.perseu
     "dc":"http://purl.org/dc/terms/",
     "dts":"https://w3id.org/dts/api#"
   },
-  "@id":"/navigation?groupBy=1\u0026id=urn%3Acts%3AgreekLit%3Atlg0016.tlg001.perseus-grc2\u0026level=1",
+  "@id":"/navigation?groupBy=1&id=urn%3Acts%3AgreekLit%3Atlg0016.tlg001.perseus-grc2&level=1",
   "dts:citeDepth":3,
   "dts:level":1,
-  "dts:passage":"/documents?id=urn%3Acts%3AgreekLit%3Atlg0016.tlg001.perseus-grc2{\u0026ref}{\u0026start}{\u0026end}",
+  "dts:passage":"/documents?id=urn%3Acts%3AgreekLit%3Atlg0016.tlg001.perseus-grc2{&ref}{&start}{&end}",
   "member":[
     {
       "ref":"1"

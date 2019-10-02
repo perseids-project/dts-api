@@ -53,7 +53,7 @@ class Fragment < ApplicationRecord
   private
 
   def steps(stop_fragment)
-    siblings.select { |fragment| fragment.rank >= rank && fragment.rank <= stop_fragment.descendent_rank }.size
+    siblings.count { |fragment| fragment.rank >= rank && fragment.rank <= stop_fragment.descendent_rank }
   end
 
   def siblings

@@ -12,6 +12,7 @@ gem 'rails', '~> 6.0.0.rc1'
 
 group :development, :test do
   gem 'bullet'
+  gem 'bundler-audit'
   gem 'factory_bot_rails'
   gem 'pry-byebug'
   gem 'rspec-rails'

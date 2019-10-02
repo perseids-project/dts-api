@@ -73,7 +73,7 @@ class Parser
 
     def set_collection_title(collection, generic_title)
       title = generic_title.presence ||
-              collection.collection_titles.select { |t| t.language == 'en' }.first&.title&.presence ||
+              collection.collection_titles.find { |t| t.language == 'en' }&.title&.presence ||
               collection.collection_titles.first.title
 
       collection.title = title
@@ -81,7 +81,7 @@ class Parser
 
     def set_collection_description(collection, generic_description)
       description = generic_description.presence ||
-                    collection.collection_descriptions.select { |d| d.language == 'en' }.first&.description.presence ||
+                    collection.collection_descriptions.find { |d| d.language == 'en' }&.description.presence ||
                     collection.collection_descriptions.first&.description.presence ||
                     collection.title
 

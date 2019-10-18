@@ -12,6 +12,7 @@ class FragmentPresenter < ApplicationPresenter
     {
       prev: fragment.previous_fragment,
       next: fragment.next_fragment,
+      up: fragment.parent,
       first: fragment.first_fragment,
       last: fragment.last_fragment,
     }.map { |name, fragment| link(name, fragment) }.compact

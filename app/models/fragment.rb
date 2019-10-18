@@ -50,6 +50,12 @@ class Fragment < ApplicationRecord
     [range.first, range.last]
   end
 
+  def parent_range(stop_fragment)
+    return [] unless parent && stop_fragment.parent
+
+    [parent, stop_fragment.parent]
+  end
+
   private
 
   def steps(stop_fragment)

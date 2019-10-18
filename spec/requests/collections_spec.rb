@@ -296,7 +296,7 @@ RSpec.describe '/collections', type: :request do
       '@id' => 'default',
       '@type' => 'Collection',
       'title' => 'Root',
-      'totalItems' => 2,
+      'totalItems' => 0,
     )
   end
 
@@ -314,7 +314,7 @@ RSpec.describe '/collections', type: :request do
       '@id' => 'herodotus',
       '@type' => 'Collection',
       'member' => [
-        { '@id' => 'books', '@type' => 'Collection', 'title' => 'collection of books', 'totalItems' => 2 },
+        { '@id' => 'books', '@type' => 'Collection', 'title' => 'collection of books', 'totalItems' => 1 },
       ],
       'title' => 'histories',
       'totalItems' => 1,
@@ -335,10 +335,10 @@ RSpec.describe '/collections', type: :request do
       '@id' => 'books',
       '@type' => 'Collection',
       'member' => [
-        { '@id' => 'default', '@type' => 'Collection', 'title' => 'Root', 'totalItems' => 2 },
+        { '@id' => 'default', '@type' => 'Collection', 'title' => 'Root', 'totalItems' => 0 },
       ],
       'title' => 'collection of books',
-      'totalItems' => 2,
+      'totalItems' => 1,
     )
   end
 

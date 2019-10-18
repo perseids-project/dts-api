@@ -107,10 +107,10 @@ RSpec.describe '/collections?page=', type: :request do
       '@id' => 'books',
       '@type' => 'Collection',
       'member' => [
-        { '@id' => 'default', '@type' => 'Collection', 'title' => 'Root', 'totalItems' => 1 },
+        { '@id' => 'default', '@type' => 'Collection', 'title' => 'Root', 'totalItems' => 0 },
       ],
       'title' => 'collection of books',
-      'totalItems' => 25,
+      'totalItems' => 1,
       'view' => {
         '@id' => '/collections?id=books&nav=parents&page=1',
         '@type' => 'PartialCollectionView',

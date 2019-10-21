@@ -1,6 +1,6 @@
 class CollectionPresenter < ApplicationPresenter
   attr_accessor :collection, :nav, :page, :nested
-  delegate :urn, :description, :title, :children_count, to: :collection
+  delegate :urn, :children, :description, :display_type, :parent, :title, :children_count, to: :collection
 
   def initialize(collection, nav: 'children', page: nil, nested: false)
     @collection = collection
@@ -19,8 +19,8 @@ class CollectionPresenter < ApplicationPresenter
   def json
     {
       '@id': urn,
-      '@type': collection.display_type.titleize,
-      totalItems: children_count,
+      '@type': display_type.titleize,
+      totalItems: total_items,
       title: title,
     }.merge(optional_json, member_json, context_json, resource_json, view_json, dublincore_json)
   end
@@ -86,19 +86,19 @@ class CollectionPresenter < ApplicationPresenter
   end
 
   def parent_members
-    collection.parent ? [CollectionPresenter.new(collection.parent, nested: true)] : []
+    parent ? [CollectionPresenter.new(parent, nav: nav, nested: true)] : []
   end
 
   def paginated_members
     members = collection.paginated_children(page).includes(:collection_titles, :collection_descriptions)
 
-    members.map { |c| CollectionPresenter.new(c, nested: true) }
+    members.map { |c| CollectionPresenter.new(c, nav: nav, nested: true) }
   end
 
   def child_members
-    members = collection.children.includes(:collection_titles, :collection_descriptions)
+    members = children.includes(:collection_titles, :collection_descriptions)
 
-    members.map { |c| CollectionPresenter.new(c, nested: true) }
+    members.map { |c| CollectionPresenter.new(c, nav: nav, nested: true) }
   end
 
   def last_page
@@ -106,13 +106,20 @@ class CollectionPresenter < ApplicationPresenter
 
     if !page
       @last_page = nil
-    elsif parents? && collection.parent
+    elsif parents? && parent
       @last_page = 1
     elsif children?
       @last_page = collection.last_page
     else
       @last_page = 0
     end
+  end
+
+  def total_items
+    return children_count if children?
+    return 1 if parent
+
+    0
   end
 
   def parents?

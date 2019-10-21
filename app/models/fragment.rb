@@ -11,7 +11,7 @@ class Fragment < ApplicationRecord
   validates :descendent_rank, presence: true, numericality: { only_integer: true }
 
   def previous_fragment
-    Fragment.find_by(document: document, parent: parent, level: level, rank: rank - 1)
+    Fragment.where(document: document, level: level, rank: -Float::INFINITY...rank).order(:rank).last
   end
 
   def previous_range(stop_fragment)
@@ -21,7 +21,7 @@ class Fragment < ApplicationRecord
   end
 
   def next_fragment
-    Fragment.find_by(document: document, parent: parent, level: level, rank: rank + 1)
+    Fragment.where(document: document, level: level, rank: (rank + 1)..Float::INFINITY).order(:rank).first
   end
 
   def next_range(stop_fragment)
@@ -31,7 +31,7 @@ class Fragment < ApplicationRecord
   end
 
   def first_fragment
-    Fragment.where(document: document, parent: parent, level: level).order(:rank).first
+    Fragment.where(document: document, level: level).order(:rank).first
   end
 
   def first_range(stop_fragment)
@@ -41,7 +41,7 @@ class Fragment < ApplicationRecord
   end
 
   def last_fragment
-    Fragment.where(document: document, parent: parent, level: level).order(:rank).last
+    Fragment.where(document: document, level: level).order(:rank).last
   end
 
   def last_range(stop_fragment)

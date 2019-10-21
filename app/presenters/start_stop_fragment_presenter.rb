@@ -20,12 +20,7 @@ class StartStopFragmentPresenter < ApplicationPresenter
   end
 
   def links
-    {
-      prev: start.previous_range(stop),
-      next: start.next_range(stop),
-      first: start.first_range(stop),
-      last: start.last_range(stop),
-    }.map { |name, fragments| link(name, fragments) }.compact
+    link_headers.map { |name, fragments| link(name, fragments) }.compact
   end
 
   private
@@ -38,6 +33,16 @@ class StartStopFragmentPresenter < ApplicationPresenter
         node << Nokogiri::XML(xml).xpath('/tei:TEI/dts:fragment', tei: 'http://www.tei-c.org/ns/1.0', dts: 'https://w3id.org/dts/api#').children
       end
     end.to_xml
+  end
+
+  def link_headers
+    {
+      prev: start.previous_range(stop),
+      next: start.next_range(stop),
+      up: start.parent_range(stop),
+      first: start.first_range(stop),
+      last: start.last_range(stop),
+    }
   end
 
   def link(name, fragments)

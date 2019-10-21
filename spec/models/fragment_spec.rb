@@ -239,5 +239,15 @@ RSpec.describe Fragment, type: :model do
         expect(child11.last_range(child13)).to eq([child21, child23])
       end
     end
+
+    describe '#parent_range' do
+      it 'is empty for a parent fragment' do
+        expect(parent1.parent_range(parent2)).to be_empty
+      end
+
+      it 'gets the parent range for a child fragment' do
+        expect(child13.parent_range(child21)).to eq([parent1, parent2])
+      end
+    end
   end
 end

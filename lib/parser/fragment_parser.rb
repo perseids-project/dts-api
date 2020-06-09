@@ -86,7 +86,7 @@ class FragmentParser
   end
 
   def xpath_from_pattern(pattern)
-    pattern['replacementPattern'].sub(/\A#xpath\(/, '').sub(/\)\z/, '').gsub("\\'", "'")
+    pattern['replacementPattern'].delete_prefix('#xpath(').delete_suffix(')').gsub("\\'", "'")
   end
 
   def update_rank!

@@ -1,5 +1,6 @@
 class DocumentPresenter < ApplicationPresenter
   attr_accessor :presenter, :document
+
   delegate :valid?, :links, :xml, to: :presenter
   delegate :urn, :collection, to: :document
   delegate :urn, :collection, to: :collection, prefix: :collection

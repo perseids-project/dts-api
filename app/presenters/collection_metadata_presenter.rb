@@ -1,5 +1,6 @@
 class CollectionMetadataPresenter < ApplicationPresenter
   attr_accessor :collection
+
   delegate :cite_depth, to: :collection
 
   def initialize(collection)

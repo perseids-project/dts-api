@@ -1,5 +1,6 @@
 class DublinCorePresenter < ApplicationPresenter
   attr_accessor :collection
+
   delegate :language, to: :collection
 
   def initialize(collection)

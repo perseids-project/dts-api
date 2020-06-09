@@ -1,5 +1,6 @@
 class NavigationPresenter < ApplicationPresenter
   attr_accessor :presenter, :document, :fragment, :start, :stop, :group_by
+
   delegate :valid?, :members, :level, to: :presenter
   delegate :urn, :cite_depth, to: :document
 

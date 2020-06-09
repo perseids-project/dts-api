@@ -1,5 +1,6 @@
 class StartStopFragmentPresenter < ApplicationPresenter
   attr_accessor :document, :start, :stop
+
   delegate :urn, to: :document
 
   def initialize(document, start, stop)

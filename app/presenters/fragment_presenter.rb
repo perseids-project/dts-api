@@ -1,5 +1,6 @@
 class FragmentPresenter < ApplicationPresenter
   attr_accessor :document, :fragment
+
   delegate :xml, to: :fragment
   delegate :urn, to: :document
 

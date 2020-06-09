@@ -2,7 +2,10 @@ inherit_gem:
   gnar-style:
     - "rubocop/rubocop_rails.yml"
 
-Metrics/LineLength:
+AllCops:
+  NewCops: enable
+
+Layout/LineLength:
   Max: 120
   Severity: refactor
 

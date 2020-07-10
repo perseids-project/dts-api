@@ -1,0 +1,48 @@
+name: Run tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ['2.6']
+    services:
+      db:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    name: Ruby ${{ matrix.ruby }} test
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: Install bundler
+        run: gem install bundler
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Set up database
+        run: bundle exec rake db:{create,migrate}
+
+      - name: Run tests
+        run: bundle exec rspec
+
+      - name: Lint code
+        run: bundle exec rubocop
+
+      - name: Audit code
+        run: bundle exec bundler-audit check --update

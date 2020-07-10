@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.6.0'
+ruby '~> 2.6.0'
 
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'iso-639'

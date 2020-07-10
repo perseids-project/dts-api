@@ -1,7 +1,7 @@
 class DocumentPresenter < ApplicationPresenter
   attr_accessor :presenter, :document
 
-  delegate :valid?, :links, :xml, to: :presenter
+  delegate :valid?, :links, :xml, :epub, to: :presenter
   delegate :urn, :collection, to: :document
   delegate :urn, :collection, to: :collection, prefix: :collection
 
@@ -24,6 +24,10 @@ class DocumentPresenter < ApplicationPresenter
       "<#{navigation_path(id: urn)}>; rel=\"contents\"",
       "<#{collections_path(id: collection_urn)}>; rel=\"collection\"",
     ]).join(', ')
+  end
+
+  def to_epub(_options = {})
+    epub.string
   end
 
   private

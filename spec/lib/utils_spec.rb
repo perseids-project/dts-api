@@ -2,11 +2,7 @@ require 'rails_helper'
 require 'utils'
 
 RSpec.describe Utils do
-  class Foo
-    include Utils
-  end
-
-  subject(:utils) { Foo.new }
+  subject(:utils) { Class.new { include Utils }.new }
 
   describe '#path' do
     it 'generates the correct path' do

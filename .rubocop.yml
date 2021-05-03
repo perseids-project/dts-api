@@ -12,9 +12,12 @@ Layout/LineLength:
 Style/StringLiterals:
   EnforcedStyle: single_quotes
 
+Lint/MissingSuper:
+  Enabled: false
+
 Metrics/MethodLength:
   Max: 15
-  ExcludedMethods:
+  IgnoredMethods:
     - json
 
 Metrics/ParameterLists:

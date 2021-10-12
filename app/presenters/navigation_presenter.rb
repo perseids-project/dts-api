@@ -43,7 +43,7 @@ class NavigationPresenter < ApplicationPresenter
   end
 
   def invalid_start_stop_combination?(start, stop)
-    start && !stop || stop && !start
+    (start && !stop) || (stop && !start)
   end
 
   def member_json

@@ -33,6 +33,6 @@ class DocumentPresenter < ApplicationPresenter
   end
 
   def invalid_start_stop_combination?(start, stop)
-    start && !stop || stop && !start
+    (start && !stop) || (stop && !start)
   end
 end

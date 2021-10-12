@@ -4,7 +4,7 @@ class FragmentNavigationPresenter < ApplicationPresenter
   def initialize(document, fragment, level:)
     @document = document
     @fragment = fragment
-    @level = level || fragment.level + 1
+    @level = level || (fragment.level + 1)
   end
 
   def members

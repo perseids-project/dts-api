@@ -32,7 +32,7 @@ class Collection < ApplicationRecord
   end
 
   def last_page(page_size: 10)
-    (children_count - 1) / page_size + 1
+    ((children_count - 1) / page_size) + 1
   end
 
   def paginated_children(page, page_size: 10)

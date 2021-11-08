@@ -16,7 +16,7 @@ class FragmentPresenter < ApplicationPresenter
       up: fragment.parent,
       first: fragment.first_fragment,
       last: fragment.last_fragment,
-    }.map { |name, fragment| link(name, fragment) }.compact
+    }.filter_map { |name, fragment| link(name, fragment) }
   end
 
   private

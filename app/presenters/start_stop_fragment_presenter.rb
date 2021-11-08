@@ -21,7 +21,7 @@ class StartStopFragmentPresenter < ApplicationPresenter
   end
 
   def links
-    link_headers.map { |name, fragments| link(name, fragments) }.compact
+    link_headers.filter_map { |name, fragments| link(name, fragments) }
   end
 
   private

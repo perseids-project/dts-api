@@ -31,7 +31,7 @@ class Parser
     attr_reader :file, :parent, :work, :logger
 
     def resources_from_tags(tags, directory)
-      tags.map { |edition| resource_from_edition(edition, directory) }.compact
+      tags.filter_map { |edition| resource_from_edition(edition, directory) }
     end
 
     def resource_from_edition(edition, directory)

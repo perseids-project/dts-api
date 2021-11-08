@@ -26,13 +26,13 @@ class Parser
     attr_reader :name, :collections, :logger
 
     def find_group_cts_files
-      Dir.glob(path(name, 'data', '*', '__cts__.xml')).sort
+      Dir.glob(path(name, 'data', '*', '__cts__.xml'))
     end
 
     def find_work_cts_files(group_cts_file)
       group_cts_directory = File.dirname(group_cts_file)
 
-      Dir.glob(File.join(group_cts_directory, '*', '__cts__.xml')).sort
+      Dir.glob(File.join(group_cts_directory, '*', '__cts__.xml'))
     end
 
     def parse_group_cts_file(file)

@@ -198,6 +198,33 @@ text is pulled from.
 Visit `localhost:3000` to access the Rails application directly
 or visit `localhost:3001` to hit the cache (which uses Nginx).
 
+### Including in other compose files
+
+The instructions above are for building the Docker image locally. You can use
+a prebuilt image by including `perseidsproject/dts-api` as one of your services in
+`docker-compose.yml`.
+A simple configuration is:
+
+```yaml
+version: '3'
+services:
+  db:
+    image: postgres
+    ports:
+      - 5434:5432
+  app:
+    image: perseidsproject/dts-api
+    command: bundle exec rails server -b 0.0.0.0 -p 3000
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=postgres://postgres@db
+    links:
+      - db
+```
+
+(See project on [Docker Hub](https://hub.docker.com/r/perseidsproject/dts-api/).)
+
 ## Bugs and feature requests
 
 For any bugs or feature requests, please create
